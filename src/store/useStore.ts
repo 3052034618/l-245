@@ -148,7 +148,14 @@ export const useAppStore = create<AppState>((set, get) => {
           };
         }
         
-        const newRecords = [record, ...state.commuteRecords].sort((a, b) => {
+        const enriched: CommuteRecord = {
+          ...record,
+          userName: record.userName || state.user.name,
+          userDept: record.userDept || state.user.department,
+          userAvatarId: record.userAvatarId || state.user.avatarId
+        };
+        
+        const newRecords = [enriched, ...state.commuteRecords].sort((a, b) => {
           if (a.date !== b.date) return b.date.localeCompare(a.date);
           return b.time.localeCompare(a.time);
         });
@@ -257,7 +264,8 @@ export const useAppStore = create<AppState>((set, get) => {
         return { success: false, message: '拼车已关闭或已满员' };
       }
       
-      if (carpool.members.length >= carpool.seats) {
+      const occupiedCount = Math.max(carpool.members?.length || 0, carpool.joinedCount || 0);
+      if (occupiedCount >= carpool.seats) {
         return { success: false, message: '座位已满' };
       }
       
@@ -265,8 +273,8 @@ export const useAppStore = create<AppState>((set, get) => {
         return { success: false, message: '您已加入该拼车' };
       }
       
-      const newMembers = [...carpool.members, member];
-      const newJoinedCount = newMembers.length;
+      const newMembers = [...(carpool.members || []), member];
+      const newJoinedCount = occupiedCount + 1;
       const newStatus = newJoinedCount >= carpool.seats ? 'full' : 'open';
       
       set(s => ({

@@ -21,6 +21,7 @@ const AdminPage: React.FC = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchDate, setSearchDate] = useState('');
   const [searchTransport, setSearchTransport] = useState<TransportType | ''>('');
+  const [searchEmployeeName, setSearchEmployeeName] = useState('');
   const [showSearchPanel, setShowSearchPanel] = useState(false);
   
   const totalEmployees = 185;
@@ -68,9 +69,15 @@ const AdminPage: React.FC = () => {
           (opt?.name && opt.name.toLowerCase().includes(kw)) ||
           r.date.includes(kw) ||
           (r.remark && r.remark.toLowerCase().includes(kw)) ||
-          (r.reviewNote && r.reviewNote.toLowerCase().includes(kw))
+          (r.reviewNote && r.reviewNote.toLowerCase().includes(kw)) ||
+          (r.userName && r.userName.toLowerCase().includes(kw))
         );
       });
+    }
+    
+    if (searchEmployeeName.trim()) {
+      const empKw = searchEmployeeName.trim().toLowerCase();
+      result = result.filter(r => r.userName && r.userName.toLowerCase().includes(empKw));
     }
     
     if (searchDate.trim()) {
@@ -83,7 +90,7 @@ const AdminPage: React.FC = () => {
     }
     
     return result;
-  }, [baseFiltered, searchKeyword, searchDate, searchTransport]);
+  }, [baseFiltered, searchKeyword, searchDate, searchTransport, searchEmployeeName]);
   
   const totalCarbon = useMemo(() => {
     return mockDepartmentRanking.reduce((sum, dept) => sum + dept.totalCarbon, 0);
@@ -195,6 +202,7 @@ const AdminPage: React.FC = () => {
     setSearchKeyword('');
     setSearchDate('');
     setSearchTransport('');
+    setSearchEmployeeName('');
   };
   
   const getStatusText = (status: string) => {
@@ -348,7 +356,16 @@ const AdminPage: React.FC = () => {
           className={styles.searchInput}
           value={searchKeyword}
           onInput={(e) => setSearchKeyword(e.detail.value)}
-          placeholder="日期/交通方式/备注"
+          placeholder="日期/交通方式/备注/员工名"
+        />
+      </View>
+      <View className={styles.searchRow}>
+        <Text className={styles.searchLabel}>员工姓名</Text>
+        <Input
+          className={styles.searchInput}
+          value={searchEmployeeName}
+          onInput={(e) => setSearchEmployeeName(e.detail.value)}
+          placeholder="请输入员工姓名"
         />
       </View>
       <View className={styles.searchRow}>
@@ -455,9 +472,9 @@ const AdminPage: React.FC = () => {
         </View>
       )}
       
-      {(filter === 'approved' || filter === 'rejected' || filter === 'all') && reviewedRecords.length > 0 && (
+      {(filter === 'approved' || filter === 'rejected' || filter === 'all') && filteredRecords.length > 0 && (
         <View className={styles.historyHint}>
-          共 {reviewedRecords.length} 条审核记录
+          共 {filteredRecords.length} 条审核记录
         </View>
       )}
       
@@ -465,7 +482,7 @@ const AdminPage: React.FC = () => {
         <View className={styles.emptyReview}>
           <Text style={{ fontSize: '48rpx' }}>🎉</Text>
           <Text style={{ fontSize: '28rpx', color: '#86909C', marginTop: '16rpx' }}>
-            {searchKeyword || searchDate || searchTransport
+            {searchKeyword || searchDate || searchTransport || searchEmployeeName
               ? '没有找到匹配的记录'
               : `暂无${getStatusText(filter)}的补录申请`}
           </Text>
@@ -490,12 +507,12 @@ const AdminPage: React.FC = () => {
                 <View className={styles.reviewUser}>
                   <Image
                     className={styles.reviewAvatar}
-                    src={`https://picsum.photos/id/${user.avatarId}/100/100`}
+                    src={`https://picsum.photos/id/${record.userAvatarId || user.avatarId}/100/100`}
                     mode="aspectFill"
                   />
                   <View>
-                    <Text className={styles.reviewUserName}>{user.name}</Text>
-                    <Text className={styles.reviewUserDept}>{user.department}</Text>
+                    <Text className={styles.reviewUserName}>{record.userName || user.name}</Text>
+                    <Text className={styles.reviewUserDept}>{record.userDept || user.department}</Text>
                   </View>
                 </View>
                 <View className={classnames(styles.reviewStatus, styles[getStatusClass(record.status)])}>

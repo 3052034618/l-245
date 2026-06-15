@@ -1,4 +1,4 @@
-import type { RankItem, DepartmentRank, CarpoolInfo } from '@/types';
+import type { RankItem, DepartmentRank, CarpoolInfo, CarpoolMember } from '@/types';
 
 const names = [
   '张明', '李华', '王芳', '刘伟', '陈静', '杨帆', '赵磊', '黄丽',
@@ -43,67 +43,124 @@ export const mockDepartmentRanking: DepartmentRank[] = [
 ];
 
 export const mockCarpoolList: CarpoolInfo[] = [
-  {
-    id: 'carpool-1',
-    initiator: '张明',
-    initiatorAvatar: 64,
-    startLocation: '回龙观地铁站',
-    endLocation: '科技园A座',
-    startTime: '08:30',
-    seats: 4,
-    joinedCount: 2,
-    date: '2024-06-15',
-    routeName: '回龙观-科技园'
-  },
-  {
-    id: 'carpool-2',
-    initiator: '李华',
-    initiatorAvatar: 91,
-    startLocation: '西二旗地铁站',
-    endLocation: '科技园B座',
-    startTime: '09:00',
-    seats: 3,
-    joinedCount: 1,
-    date: '2024-06-15',
-    routeName: '西二旗-科技园'
-  },
-  {
-    id: 'carpool-3',
-    initiator: '王芳',
-    initiatorAvatar: 177,
-    startLocation: '望京SOHO',
-    endLocation: '科技园C座',
-    startTime: '08:15',
-    seats: 2,
-    joinedCount: 0,
-    date: '2024-06-16',
-    routeName: '望京-科技园'
-  },
-  {
-    id: 'carpool-4',
-    initiator: '刘伟',
-    initiatorAvatar: 338,
-    startLocation: '上地地铁站',
-    endLocation: '科技园A座',
-    startTime: '08:45',
-    seats: 3,
-    joinedCount: 2,
-    date: '2024-06-16',
-    routeName: '上地-科技园'
-  }
+  (() => {
+    const initiator: CarpoolMember = {
+      id: 'user-mock-1', name: '张明', avatarId: 64, department: '技术研发部', joinTime: '2024-06-14 18:00:00'
+    };
+    const member1: CarpoolMember = {
+      id: 'user-mock-5', name: '陈静', avatarId: 338, department: '产品设计部', joinTime: '2024-06-14 19:12:00'
+    };
+    return {
+      id: 'carpool-1',
+      initiator: '张明',
+      initiatorAvatar: 64,
+      initiatorDept: '技术研发部',
+      startLocation: '回龙观地铁站',
+      endLocation: '科技园A座',
+      startTime: '08:30',
+      seats: 4,
+      joinedCount: 2,
+      date: '2024-06-15',
+      routeName: '回龙观-科技园',
+      members: [initiator, member1],
+      createTime: '2024-06-14 18:00:00',
+      status: 'open' as const
+    };
+  })(),
+  (() => {
+    const initiator: CarpoolMember = {
+      id: 'user-mock-2', name: '李华', avatarId: 91, department: '产品设计部', joinTime: '2024-06-14 17:30:00'
+    };
+    return {
+      id: 'carpool-2',
+      initiator: '李华',
+      initiatorAvatar: 91,
+      initiatorDept: '产品设计部',
+      startLocation: '西二旗地铁站',
+      endLocation: '科技园B座',
+      startTime: '09:00',
+      seats: 3,
+      joinedCount: 1,
+      date: '2024-06-15',
+      routeName: '西二旗-科技园',
+      members: [initiator],
+      createTime: '2024-06-14 17:30:00',
+      status: 'open' as const
+    };
+  })(),
+  (() => {
+    const initiator: CarpoolMember = {
+      id: 'user-mock-3', name: '王芳', avatarId: 177, department: '市场运营部', joinTime: '2024-06-15 09:00:00'
+    };
+    return {
+      id: 'carpool-3',
+      initiator: '王芳',
+      initiatorAvatar: 177,
+      initiatorDept: '市场运营部',
+      startLocation: '望京SOHO',
+      endLocation: '科技园C座',
+      startTime: '08:15',
+      seats: 2,
+      joinedCount: 0,
+      date: '2024-06-16',
+      routeName: '望京-科技园',
+      members: [],
+      createTime: '2024-06-15 09:00:00',
+      status: 'open' as const
+    };
+  })(),
+  (() => {
+    const initiator: CarpoolMember = {
+      id: 'user-mock-4', name: '刘伟', avatarId: 338, department: '人力资源部', joinTime: '2024-06-15 10:00:00'
+    };
+    const member1: CarpoolMember = {
+      id: 'user-mock-6', name: '杨帆', avatarId: 1027, department: '技术研发部', joinTime: '2024-06-15 10:20:00'
+    };
+    return {
+      id: 'carpool-4',
+      initiator: '刘伟',
+      initiatorAvatar: 338,
+      initiatorDept: '人力资源部',
+      startLocation: '上地地铁站',
+      endLocation: '科技园A座',
+      startTime: '08:45',
+      seats: 3,
+      joinedCount: 2,
+      date: '2024-06-16',
+      routeName: '上地-科技园',
+      members: [initiator, member1],
+      createTime: '2024-06-15 10:00:00',
+      status: 'open' as const
+    };
+  })()
 ];
 
 export const mockMyCarpool: CarpoolInfo[] = [
-  {
-    id: 'mycarpool-1',
-    initiator: '我',
-    initiatorAvatar: 1027,
-    startLocation: '天通苑北地铁站',
-    endLocation: '科技园B座',
-    startTime: '08:20',
-    seats: 4,
-    joinedCount: 3,
-    date: '2024-06-15',
-    routeName: '天通苑-科技园'
-  }
+  (() => {
+    const initiator: CarpoolMember = {
+      id: 'user-001', name: '我', avatarId: 1027, department: '技术研发部', joinTime: '2024-06-14 20:00:00'
+    };
+    const m1: CarpoolMember = {
+      id: 'user-mock-7', name: '赵磊', avatarId: 64, department: '行政部', joinTime: '2024-06-14 21:00:00'
+    };
+    const m2: CarpoolMember = {
+      id: 'user-mock-8', name: '黄丽', avatarId: 91, department: '财务部', joinTime: '2024-06-14 22:00:00'
+    };
+    return {
+      id: 'mycarpool-1',
+      initiator: '我',
+      initiatorAvatar: 1027,
+      initiatorDept: '技术研发部',
+      startLocation: '天通苑北地铁站',
+      endLocation: '科技园B座',
+      startTime: '08:20',
+      seats: 4,
+      joinedCount: 3,
+      date: '2024-06-15',
+      routeName: '天通苑-科技园',
+      members: [initiator, m1, m2],
+      createTime: '2024-06-14 20:00:00',
+      status: 'open' as const
+    };
+  })()
 ];

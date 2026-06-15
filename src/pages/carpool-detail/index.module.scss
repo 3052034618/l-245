@@ -214,6 +214,13 @@
   border-radius: $radius-xs;
 }
 
+.memberEmpty {
+  padding: $spacing-lg $spacing-sm;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
 .noticeCard {
   background: rgba(255, 125, 0, 0.05);
   border-radius: $radius-md;

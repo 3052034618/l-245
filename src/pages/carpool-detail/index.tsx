@@ -13,6 +13,10 @@ const CarpoolDetailPage: React.FC = () => {
   const carpoolId = router.params.id;
   const isCreate = !carpoolId;
   
+  const getOccupiedCount = (cp: CarpoolInfo) => {
+    return Math.max(cp.members?.length || 0, cp.joinedCount || 0);
+  };
+  
   const [startLocation, setStartLocation] = useState('');
   const [endLocation, setEndLocation] = useState('');
   const [startTime, setStartTime] = useState('08:30');
@@ -47,7 +51,7 @@ const CarpoolDetailPage: React.FC = () => {
   
   const remainingSeats = useMemo(() => {
     if (!carpool) return 0;
-    return carpool.seats - carpool.joinedCount;
+    return carpool.seats - getOccupiedCount(carpool);
   }, [carpool]);
   
   const handleJoin = () => {
@@ -150,11 +154,6 @@ const CarpoolDetailPage: React.FC = () => {
     Taro.showToast({ title: '分享功能', icon: 'none' });
   };
   
-  const defaultMembers = [
-    { name: '张明', dept: '技术研发部', avatar: 64 },
-    { name: '李华', dept: '产品设计部', avatar: 91 }
-  ];
-  
   if (isCreate) {
     return (
       <View className={styles.page}>
@@ -254,15 +253,8 @@ const CarpoolDetailPage: React.FC = () => {
   
   const initiatorAvatarUrl = `https://picsum.photos/id/${carpool.initiatorAvatar}/100/100`;
   
-  const displayMembers = carpool.members.length > 0 
-    ? carpool.members 
-    : defaultMembers.map((m, i) => ({
-        id: `mock-${i}`,
-        name: m.name,
-        avatarId: m.avatar,
-        department: m.dept,
-        joinTime: ''
-      }));
+  const occupiedCount = getOccupiedCount(carpool);
+  const displayMembers = carpool.members && carpool.members.length > 0 ? carpool.members : [];
   
   const getJoinBtnText = () => {
     if (isCancelled) return '拼车已取消';
@@ -321,7 +313,7 @@ const CarpoolDetailPage: React.FC = () => {
               styles.seatsNum,
               (isFull || isCancelled) && { color: isCancelled ? '#86909C' : '#F53F3F' }
             )}>
-              {carpool.joinedCount}/{carpool.seats}
+              {occupiedCount}/{carpool.seats}
             </Text>
             <Text className={styles.seatsLabel}>已乘车/总座位</Text>
             {!isCancelled && remainingSeats > 0 && (
@@ -337,33 +329,43 @@ const CarpoolDetailPage: React.FC = () => {
       <View className={classnames(styles.card, isCancelled && styles.disabled)}>
         <View className={styles.membersHeader}>
           <Text className={styles.sectionTitle}>
-            乘车成员 ({displayMembers.length})
+            乘车成员 ({occupiedCount})
           </Text>
           {!isCancelled && remainingSeats > 0 && (
             <Text className={styles.membersHint}>还剩 {remainingSeats} 个座位</Text>
           )}
         </View>
-        <View className={styles.membersList}>
-          {displayMembers.map((member, idx) => (
-            <View key={member.id || idx} className={styles.memberItem}>
-              <Image
-                className={styles.memberAvatar}
-                src={`https://picsum.photos/id/${member.avatarId}/100/100`}
-                mode="aspectFill"
-              />
-              <View className={styles.memberInfo}>
-                <Text className={styles.memberName}>
-                  {member.name}
-                  {member.id === user.id && (
-                    <Text className={styles.memberMe}>(我)</Text>
-                  )}
-                </Text>
-                <Text className={styles.memberDept}>{member.department}</Text>
+        {displayMembers.length > 0 ? (
+          <View className={styles.membersList}>
+            {displayMembers.map((member, idx) => (
+              <View key={member.id || idx} className={styles.memberItem}>
+                <Image
+                  className={styles.memberAvatar}
+                  src={`https://picsum.photos/id/${member.avatarId}/100/100`}
+                  mode="aspectFill"
+                />
+                <View className={styles.memberInfo}>
+                  <Text className={styles.memberName}>
+                    {member.name}
+                    {member.id === user.id && (
+                      <Text className={styles.memberMe}>(我)</Text>
+                    )}
+                  </Text>
+                  <Text className={styles.memberDept}>{member.department}</Text>
+                </View>
+                {idx === 0 && <Text className={styles.memberRole}>车主</Text>}
               </View>
-              {idx === 0 && <Text className={styles.memberRole}>车主</Text>}
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        ) : occupiedCount > 0 ? (
+          <View className={styles.memberEmpty}>
+            <Text>已有 {occupiedCount} 人占座，成员资料暂未上传</Text>
+          </View>
+        ) : (
+          <View className={styles.memberEmpty}>
+            <Text>暂无成员，快来加入吧</Text>
+          </View>
+        )}
       </View>
       
       <View className={classnames(styles.card, isCancelled && styles.disabled)}>

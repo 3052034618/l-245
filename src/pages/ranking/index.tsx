@@ -59,8 +59,15 @@ const RankingPage: React.FC = () => {
     return '加入拼车';
   };
   
+  const getOccupiedCount = (carpool: any) => {
+    return Math.max(carpool.members?.length || 0, carpool.joinedCount || 0);
+  };
+  
   const canJoin = (carpool: any) => {
-    return carpool.status === 'open' && !carpool.members.some((m: CarpoolMember) => m.id === user.id);
+    if (carpool.status !== 'open') return false;
+    if (carpool.members.some((m: CarpoolMember) => m.id === user.id)) return false;
+    if (getOccupiedCount(carpool) >= carpool.seats) return false;
+    return true;
   };
   
   return (
@@ -138,7 +145,7 @@ const RankingPage: React.FC = () => {
           
           {carpools.map(carpool => {
             const isCancelled = carpool.status === 'cancelled';
-            const occupiedCount = carpool.members.length;
+            const occupiedCount = getOccupiedCount(carpool);
             const remaining = carpool.seats - occupiedCount;
             return (
               <View

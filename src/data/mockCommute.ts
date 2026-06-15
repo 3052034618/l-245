@@ -22,6 +22,17 @@ const types: Array<{ type: CommuteRecord['type']; minDist: number; maxDist: numb
 
 const routes = ['家-公司路线A', '家-公司路线B', '地铁通勤线'];
 
+const employees = [
+  { name: '张三', dept: '技术研发部', avatar: 1027 },
+  { name: '张明', dept: '技术研发部', avatar: 64 },
+  { name: '李华', dept: '产品设计部', avatar: 91 },
+  { name: '王芳', dept: '市场运营部', avatar: 177 },
+  { name: '刘伟', dept: '人力资源部', avatar: 338 },
+  { name: '陈静', dept: '产品设计部', avatar: 338 },
+  { name: '杨帆', dept: '技术研发部', avatar: 1027 },
+  { name: '赵磊', dept: '行政部', avatar: 64 }
+];
+
 function generateRecords(count: number): CommuteRecord[] {
   const records: CommuteRecord[] = [];
   
@@ -50,6 +61,7 @@ function generateRecords(count: number): CommuteRecord[] {
     const points = Math.round(pointsPerKm[typeInfo.type] * distance);
     
     const isMakeup = Math.random() < 0.1;
+    const emp = employees[i % employees.length];
     
     records.push({
       id: `record-${i}`,
@@ -61,8 +73,11 @@ function generateRecords(count: number): CommuteRecord[] {
       direction: isGo ? 'go' : 'back',
       time,
       isMakeup,
-      status: isMakeup ? (Math.random() > 0.3 ? 'approved' : 'pending') : undefined,
-      routeName: routes[Math.floor(Math.random() * routes.length)]
+      status: isMakeup ? (Math.random() > 0.3 ? 'approved' : (Math.random() > 0.5 ? 'pending' : 'rejected')) : undefined,
+      routeName: routes[Math.floor(Math.random() * routes.length)],
+      userName: emp.name,
+      userDept: emp.dept,
+      userAvatarId: emp.avatar
     });
   }
   

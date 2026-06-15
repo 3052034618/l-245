@@ -28,6 +28,9 @@ export interface CommuteRecord {
   reviewTime?: string;
   reviewNote?: string;
   reviewerName?: string;
+  userName?: string;
+  userDept?: string;
+  userAvatarId?: number;
 }
 
 export interface GiftItem {
