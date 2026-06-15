@@ -1,0 +1,244 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 40rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, #722ED1 0%, #9254DE 100%);
+  padding: $spacing-xl $page-padding $spacing-xl * 2;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -80rpx;
+    right: -60rpx;
+    width: 240rpx;
+    height: 240rpx;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+  }
+}
+
+.headerContent {
+  position: relative;
+  z-index: 1;
+}
+
+.headerTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-bottom: $spacing-xs;
+}
+
+.headerSub {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.content {
+  padding: 0 $page-padding;
+  margin-top: -40rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.statCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.statValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+  
+  .unit {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-normal;
+    margin-left: 4rpx;
+    color: $color-text-tertiary;
+  }
+  
+  &.primary { color: $color-primary; }
+  &.warning { color: $color-warning; }
+  &.success { color: $color-success; }
+  &.info { color: $color-info; }
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.section {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.moreLink {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  
+  &::after {
+    content: ' ›';
+  }
+}
+
+.rateBar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.rateValue {
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.rateBarWrap {
+  flex: 1;
+  height: 16rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.rateBarFill {
+  height: 100%;
+  background: $gradient-primary;
+  border-radius: $radius-round;
+}
+
+.deptList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.deptRankItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.deptRank {
+  width: 40rpx;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-tertiary;
+  text-align: center;
+  flex-shrink: 0;
+  
+  &.top1 { color: #FAAD14; }
+  &.top2 { color: #C9CDD4; }
+  &.top3 { color: #E58A3E; }
+}
+
+.deptName {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.deptRate {
+  width: 100rpx;
+  text-align: right;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-md;
+}
+
+.actionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-md 0;
+  
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.actionIcon {
+  font-size: 40rpx;
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-primary-bg;
+  border-radius: $radius-md;
+}
+
+.actionText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.trendChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 200rpx;
+  padding: $spacing-md 0;
+  gap: $spacing-sm;
+}
+
+.chartBar {
+  flex: 1;
+  background: $gradient-primary;
+  border-radius: $radius-sm $radius-sm 0 0;
+  position: relative;
+  min-height: 20rpx;
+  
+  &.low { opacity: 0.5; }
+}
+
+.chartLabel {
+  position: absolute;
+  bottom: -32rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  white-space: nowrap;
+}

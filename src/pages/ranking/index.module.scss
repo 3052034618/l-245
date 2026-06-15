@@ -1,0 +1,366 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 40rpx;
+}
+
+.pageContent {
+  padding: 0 $page-padding;
+}
+
+.tabBar {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: 6rpx;
+  margin: $spacing-md 0;
+  box-shadow: $shadow-card;
+}
+
+.tabItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-sm 0;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+  
+  &.active {
+    background: $gradient-primary;
+    color: $color-text-white;
+    font-weight: $font-weight-semibold;
+  }
+  
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.topThree {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: $spacing-lg 0;
+  margin-bottom: $spacing-md;
+}
+
+.topItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  
+  &.top1 {
+    order: 2;
+    transform: translateY(-20rpx);
+  }
+  
+  &.top2 {
+    order: 1;
+  }
+  
+  &.top3 {
+    order: 3;
+  }
+}
+
+.topAvatarWrap {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-round;
+  overflow: hidden;
+  border: 4rpx solid #fff;
+  box-shadow: $shadow-card;
+  background: $color-bg-hover;
+  position: relative;
+  
+  .top1 & {
+    width: 120rpx;
+    height: 120rpx;
+    border-color: #FAAD14;
+  }
+  
+  .top2 & {
+    border-color: #C9CDD4;
+  }
+  
+  .top3 & {
+    border-color: #E58A3E;
+  }
+}
+
+.topAvatar {
+  width: 100%;
+  height: 100%;
+}
+
+.topCrown {
+  position: absolute;
+  top: -24rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32rpx;
+}
+
+.topName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  max-width: 140rpx;
+}
+
+.topPoints {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-points;
+}
+
+.topSub {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.rankList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionMore {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  
+  &::after {
+    content: ' ›';
+  }
+}
+
+.carpoolSection {
+  margin-top: $spacing-md;
+}
+
+.carpoolCard {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-sm;
+  
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.carpoolHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.carpoolAvatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-round;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: $color-bg-hover;
+}
+
+.carpoolAvatarImg {
+  width: 100%;
+  height: 100%;
+}
+
+.carpoolInitiator {
+  flex: 1;
+  min-width: 0;
+}
+
+.initiatorName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.initiatorLabel {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  background: $color-primary-bg;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+  margin-left: $spacing-xs;
+}
+
+.carpoolSeats {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+  
+  .num {
+    color: $color-carpool;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.carpoolRoute {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.routePoint {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.pointLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.pointAddress {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  @include text-ellipsis;
+}
+
+.routeArrow {
+  font-size: $font-size-lg;
+  color: $color-primary;
+  flex-shrink: 0;
+}
+
+.carpoolFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.carpoolTime {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  
+  .icon {
+    margin-right: 4rpx;
+  }
+}
+
+.joinBtn {
+  padding: 8rpx 28rpx;
+  background: $gradient-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.createCarpoolBtn {
+  width: 100%;
+  height: $button-height-md;
+  background: $color-bg-card;
+  border: 2rpx dashed $color-primary;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  color: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  margin-top: $spacing-sm;
+  
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.deptRankItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+}
+
+.deptRankNum {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-tertiary;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  
+  &.gold { color: #FAAD14; }
+  &.silver { color: #C9CDD4; }
+  &.bronze { color: #E58A3E; }
+}
+
+.deptInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.deptName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.deptStats {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.deptRight {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.deptPoints {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-points;
+}
+
+.deptRate {
+  font-size: $font-size-xs;
+  color: $color-success;
+  margin-top: 4rpx;
+}

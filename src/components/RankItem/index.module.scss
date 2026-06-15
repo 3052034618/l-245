@@ -1,0 +1,126 @@
+@use '@/styles/variables.scss' as *;
+
+.rankItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+}
+
+.rankNum {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rankIcon {
+  font-size: 36rpx;
+}
+
+.rankText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-tertiary;
+}
+
+.rankGold {
+  .rankText { color: #FAAD14; }
+}
+
+.rankSilver {
+  .rankText { color: #C9CDD4; }
+}
+
+.rankBronze {
+  .rankText { color: #E58A3E; }
+}
+
+.rankNormal {
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+}
+
+.avatarWrap {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: $color-bg-hover;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.dept {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}
+
+.rightSection {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.points {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4rpx;
+}
+
+.pointsValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-points;
+}
+
+.pointsUnit {
+  font-size: $font-size-xs;
+  color: $color-points;
+}
+
+.carbon {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4rpx;
+}
+
+.carbonValue {
+  font-size: $font-size-sm;
+  color: $color-success;
+  font-weight: $font-weight-medium;
+}
+
+.carbonUnit {
+  font-size: $font-size-xs;
+  color: $color-success;
+}

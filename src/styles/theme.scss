@@ -1,0 +1,41 @@
+// ============================================
+// 主题配色变量 - 低碳通勤App
+// ============================================
+
+// 品牌主题色：生态绿（代表环保、低碳、自然）
+$color-primary: #00B42A;
+$color-primary-light: #36CFC9;
+$color-primary-dark: #009A29;
+$color-primary-bg: rgba(0, 180, 42, 0.08);
+
+// 功能色
+$color-success: #00B42A;
+$color-warning: #FF7D00;
+$color-error: #F53F3F;
+$color-info: #165DFF;
+
+// 业务相关颜色
+$color-points: #FAAD14;
+$color-carbon: #165DFF;
+$color-carpool: #722ED1;
+
+// 背景色
+$color-bg-page: #F5F9F5;
+$color-bg-card: #FFFFFF;
+$color-bg-hover: #F0F7F0;
+
+// 文本色
+$color-text-primary: #1D2129;
+$color-text-secondary: #4E5969;
+$color-text-tertiary: #86909C;
+$color-text-disabled: #C9CDD4;
+$color-text-white: #FFFFFF;
+
+// 边框色
+$color-border: #E5E6EB;
+$color-divider: #F2F3F5;
+
+// 渐变色
+$gradient-primary: linear-gradient(135deg, #00B42A 0%, #36CFC9 100%);
+$gradient-points: linear-gradient(135deg, #FAAD14 0%, #FFC53D 100%);
+$gradient-carbon: linear-gradient(135deg, #165DFF 0%, #4080FF 100%);

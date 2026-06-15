@@ -1,0 +1,171 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 140rpx;
+}
+
+.giftImageWrap {
+  width: 100%;
+  height: 500rpx;
+  background: $color-bg-card;
+  position: relative;
+}
+
+.giftImage {
+  width: 100%;
+  height: 100%;
+}
+
+.giftInfo {
+  background: $color-bg-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.giftName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.giftDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: $spacing-md;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
+}
+
+.pointsValue {
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  color: $color-points;
+}
+
+.pointsUnit {
+  font-size: $font-size-md;
+  color: $color-points;
+}
+
+.stockInfo {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-left: auto;
+}
+
+.card {
+  background: $color-bg-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.cardTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.cardContent {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.8;
+}
+
+.useSteps {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.stepItem {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.stepNum {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepText {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  padding-top: 4rpx;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.myPoints {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.myPointsLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.myPointsValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  
+  .num {
+    color: $color-points;
+  }
+}
+
+.exchangeBtn {
+  flex-shrink: 0;
+  min-width: 240rpx;
+  height: $button-height-lg;
+  background: $gradient-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  @include button-reset;
+  
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+  
+  &.disabled {
+    background: $color-text-disabled;
+  }
+}

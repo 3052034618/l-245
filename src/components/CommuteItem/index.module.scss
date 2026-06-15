@@ -1,0 +1,123 @@
+@use '@/styles/variables.scss' as *;
+
+.commuteItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  transition: all $transition-fast;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex: 1;
+  min-width: 0;
+}
+
+.iconWrap {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon {
+  font-size: 40rpx;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.direction {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  background: $color-bg-hover;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.makeupTag {
+  font-size: $font-size-xs;
+  color: $color-warning;
+  background: rgba(255, 125, 0, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.subRow {
+  display: flex;
+  align-items: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.date {
+  color: $color-text-tertiary;
+}
+
+.time {
+  color: $color-text-secondary;
+}
+
+.route {
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}
+
+.rightSection {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.points {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-points;
+  
+  .pointsUnit {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-normal;
+    margin-left: 4rpx;
+  }
+}
+
+.carbon {
+  font-size: $font-size-xs;
+  color: $color-success;
+}

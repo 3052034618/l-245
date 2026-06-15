@@ -1,0 +1,207 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 40rpx;
+}
+
+.pageContent {
+  padding: 0 $page-padding;
+}
+
+.monthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg 0;
+}
+
+.monthNav {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-xl;
+  color: $color-text-secondary;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.monthTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.calendarCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.weekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: $spacing-md;
+}
+
+.weekDay {
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  padding: $spacing-sm 0;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8rpx;
+}
+
+.calendarDay {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-sm;
+  position: relative;
+  transition: all $transition-fast;
+  
+  &.otherMonth {
+    opacity: 0.3;
+  }
+  
+  &.hasRecord {
+    .dayDot {
+      display: block;
+    }
+  }
+  
+  &.selected {
+    background: $gradient-primary;
+    color: $color-text-white;
+    
+    .dayNum {
+      color: $color-text-white;
+    }
+    
+    .dayDot {
+      background: $color-text-white;
+    }
+  }
+  
+  &.today {
+    .dayNum {
+      font-weight: $font-weight-bold;
+      color: $color-primary;
+    }
+    
+    &.selected .dayNum {
+      color: $color-text-white;
+    }
+  }
+  
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+.dayNum {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.dayDot {
+  display: none;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: $color-primary;
+  margin-top: 4rpx;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.statCard {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-sm;
+  text-align: center;
+  box-shadow: $shadow-card;
+}
+
+.statValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-bottom: 4rpx;
+  
+  .unit {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-normal;
+    margin-left: 2rpx;
+  }
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.selectedDaySection {
+  margin-top: $spacing-md;
+}
+
+.selectedDayTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  
+  .date {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+    font-weight: $font-weight-normal;
+  }
+}
+
+.recordList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.emptyTip {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-xl * 1.5 0;
+  text-align: center;
+  box-shadow: $shadow-card;
+  
+  .icon {
+    font-size: 64rpx;
+    margin-bottom: $spacing-sm;
+  }
+  
+  .text {
+    font-size: $font-size-md;
+    color: $color-text-tertiary;
+  }
+}
