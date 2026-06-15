@@ -256,7 +256,13 @@ const CheckinPage: React.FC = () => {
           <View className={styles.recordList}>
             {todayRecords.length > 0 ? (
               todayRecords.map(record => (
-                <CommuteItem key={record.id} record={record} />
+                <CommuteItem
+                  key={record.id}
+                  record={record}
+                  onClick={() => {
+                    Taro.navigateTo({ url: `/pages/makeup-detail/index?id=${record.id}&source=checkin` });
+                  }}
+                />
               ))
             ) : (
               <View className={styles.card} style={{ textAlign: 'center', padding: '48rpx 32rpx' }}>

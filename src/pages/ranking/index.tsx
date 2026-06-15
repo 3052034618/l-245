@@ -136,65 +136,82 @@ const RankingPage: React.FC = () => {
             <Text className={styles.sectionMore}>共 {carpools.length} 条</Text>
           </View>
           
-          {carpools.map(carpool => (
-            <View
-              key={carpool.id}
-              className={styles.carpoolCard}
-              onClick={() => handleViewCarpool(carpool.id)}
-            >
-              <View className={styles.carpoolHeader}>
-                <View className={styles.carpoolAvatar}>
-                  <Image
-                    className={styles.carpoolAvatarImg}
-                    src={`https://picsum.photos/id/${carpool.initiatorAvatar}/100/100`}
-                    mode="aspectFill"
-                  />
+          {carpools.map(carpool => {
+            const isCancelled = carpool.status === 'cancelled';
+            return (
+              <View
+                key={carpool.id}
+                className={classnames(styles.carpoolCard, isCancelled && styles.cancelled)}
+                onClick={() => handleViewCarpool(carpool.id)}
+              >
+                {isCancelled && (
+                  <View className={styles.carpoolCancelledTag}>
+                    已取消
+                  </View>
+                )}
+                <View className={styles.carpoolHeader}>
+                  <View className={styles.carpoolAvatar}>
+                    <Image
+                      className={styles.carpoolAvatarImg}
+                      src={`https://picsum.photos/id/${carpool.initiatorAvatar}/100/100`}
+                      mode="aspectFill"
+                    />
+                  </View>
+                  <View className={styles.carpoolInitiator}>
+                    <Text className={styles.initiatorName}>
+                      {carpool.initiator}
+                      <Text className={styles.initiatorLabel}>发起人</Text>
+                    </Text>
+                  </View>
+                  <View className={styles.carpoolSeats}>
+                    <Text className={classnames(
+                      styles.num,
+                      (carpool.status === 'full' || isCancelled) && { color: isCancelled ? '#86909C' : '#F53F3F' }
+                    )}>
+                      {carpool.joinedCount}
+                    </Text>
+                    /{carpool.seats}人
+                  </View>
                 </View>
-                <View className={styles.carpoolInitiator}>
-                  <Text className={styles.initiatorName}>
-                    {carpool.initiator}
-                    <Text className={styles.initiatorLabel}>发起人</Text>
+                
+                <View className={styles.carpoolRoute}>
+                  <View className={styles.routePoint}>
+                    <Text className={styles.pointLabel}>起点</Text>
+                    <Text className={styles.pointAddress}>{carpool.startLocation}</Text>
+                  </View>
+                  <Text className={styles.routeArrow}>→</Text>
+                  <View className={styles.routePoint}>
+                    <Text className={styles.pointLabel}>终点</Text>
+                    <Text className={styles.pointAddress}>{carpool.endLocation}</Text>
+                  </View>
+                </View>
+                
+                <View className={styles.carpoolFooter}>
+                  <Text className={styles.carpoolTime}>
+                    <Text className={styles.icon}>🕐</Text>
+                    {carpool.date} {carpool.startTime}
                   </Text>
-                </View>
-                <View className={styles.carpoolSeats}>
-                  <Text className={classnames(styles.num, carpool.status === 'full' && { color: '#F53F3F' })}>
-                    {carpool.joinedCount}
-                  </Text>
-                  /{carpool.seats}人
-                </View>
-              </View>
-              
-              <View className={styles.carpoolRoute}>
-                <View className={styles.routePoint}>
-                  <Text className={styles.pointLabel}>起点</Text>
-                  <Text className={styles.pointAddress}>{carpool.startLocation}</Text>
-                </View>
-                <Text className={styles.routeArrow}>→</Text>
-                <View className={styles.routePoint}>
-                  <Text className={styles.pointLabel}>终点</Text>
-                  <Text className={styles.pointAddress}>{carpool.endLocation}</Text>
-                </View>
-              </View>
-              
-              <View className={styles.carpoolFooter}>
-                <Text className={styles.carpoolTime}>
-                  <Text className={styles.icon}>🕐</Text>
-                  {carpool.date} {carpool.startTime}
-                </Text>
-                <View
-                  className={classnames(styles.joinBtn, !canJoin(carpool) && { background: '#C9CDD4' })}
-                  onClick={(e) => {
-                    e.stopPropagation?.();
-                    if (canJoin(carpool)) {
-                      handleJoinCarpool(carpool.id);
-                    }
-                  }}
-                >
-                  {getJoinBtnText(carpool)}
+                  <View
+                    className={classnames(
+                      styles.joinBtn,
+                      !canJoin(carpool) && { background: '#C9CDD4' },
+                      isCancelled && { background: '#86909C' }
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation?.();
+                      if (canJoin(carpool)) {
+                        handleJoinCarpool(carpool.id);
+                      } else if (isCancelled) {
+                        Taro.showToast({ title: '拼车已取消', icon: 'none' });
+                      }
+                    }}
+                  >
+                    {getJoinBtnText(carpool)}
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
           
           <View className={styles.createCarpoolBtn} onClick={handleCreateCarpool}>
             <Text>+ 发起拼车</Text>

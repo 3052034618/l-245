@@ -38,8 +38,10 @@ interface AppState {
   addCarpool: (carpool: CarpoolInfo) => void;
   joinCarpool: (carpoolId: string, member: CarpoolMember) => { success: boolean; message: string };
   leaveCarpool: (carpoolId: string, memberId: string) => void;
+  cancelCarpool: (carpoolId: string) => { success: boolean; message: string };
   
   reviewMakeup: (recordId: string, approved: boolean, note?: string) => void;
+  batchReviewMakeup: (recordIds: string[], approved: boolean, note?: string) => { success: number; message: string };
 }
 
 const initialUser: UserInfo = {
@@ -331,6 +333,79 @@ export const useAppStore = create<AppState>((set, get) => {
       });
       get()._persist();
       console.log('[Store] reviewMakeup', recordId, approved ? '通过' : '驳回');
+    },
+    
+    batchReviewMakeup: (recordIds: string[], approved: boolean, note?: string) => {
+      const state = get();
+      let successCount = 0;
+      let totalPoints = 0;
+      let totalCarbon = 0;
+      
+      state.commuteRecords.forEach(r => {
+        if (recordIds.includes(r.id) && r.status === 'pending' && approved) {
+          successCount++;
+          totalPoints += r.points;
+          totalCarbon += r.carbonSaved;
+        } else if (recordIds.includes(r.id) && !approved) {
+          successCount++;
+        }
+      });
+      
+      set(s => {
+        let newUser = s.user;
+        if (approved && totalPoints > 0) {
+          newUser = {
+            ...s.user,
+            totalPoints: s.user.totalPoints + totalPoints,
+            totalCarbon: Number((s.user.totalCarbon + totalCarbon).toFixed(2)),
+            totalCommutes: s.user.totalCommutes + (approved ? successCount : 0)
+          };
+        }
+        
+        return {
+          commuteRecords: s.commuteRecords.map(r =>
+            recordIds.includes(r.id) && r.status === 'pending'
+              ? {
+                  ...r,
+                  status: approved ? 'approved' : 'rejected',
+                  reviewTime: new Date().toLocaleString('zh-CN'),
+                  reviewNote: note
+                }
+              : r
+          ),
+          user: newUser
+        };
+      });
+      get()._persist();
+      console.log('[Store] batchReviewMakeup', recordIds.length, '条', approved ? '通过' : '驳回', '成功', successCount, '条');
+      return {
+        success: successCount,
+        message: `成功${approved ? '通过' : '驳回'} ${successCount} 条申请`
+      };
+    },
+    
+    cancelCarpool: (carpoolId: string) => {
+      const state = get();
+      const carpool = state.carpools.find(c => c.id === carpoolId);
+      
+      if (!carpool) {
+        return { success: false, message: '拼车不存在' };
+      }
+      
+      if (carpool.status === 'cancelled') {
+        return { success: false, message: '拼车已取消' };
+      }
+      
+      set(s => ({
+        carpools: s.carpools.map(c =>
+          c.id === carpoolId
+            ? { ...c, status: 'cancelled' as const }
+            : c
+        )
+      }));
+      get()._persist();
+      console.log('[Store] cancelCarpool', carpoolId);
+      return { success: true, message: '拼车已取消' };
     }
   };
 });

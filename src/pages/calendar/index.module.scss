@@ -86,6 +86,18 @@
     }
   }
   
+  &.hasPending {
+    .dayDot {
+      display: block;
+    }
+  }
+  
+  &.hasMixed {
+    .dayDot {
+      display: block;
+    }
+  }
+  
   &.selected {
     background: $gradient-primary;
     color: $color-text-white;
@@ -127,6 +139,14 @@
   border-radius: 50%;
   background: $color-primary;
   margin-top: 4rpx;
+  
+  &.dotPending {
+    background: #FAAD14;
+  }
+  
+  &.dotMixed {
+    background: linear-gradient(135deg, $color-primary 50%, #FAAD14 50%);
+  }
 }
 
 .statsRow {
@@ -160,6 +180,74 @@
 .statLabel {
   font-size: $font-size-xs;
   color: $color-text-tertiary;
+}
+
+.pendingHint {
+  display: block;
+  font-size: 20rpx;
+  color: #FAAD14;
+  margin-top: 4rpx;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-lg;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.legendDot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  
+  &.dotNormal {
+    background: $color-primary;
+  }
+  
+  &.dotPending {
+    background: #FAAD14;
+  }
+  
+  &.dotMixed {
+    background: linear-gradient(135deg, $color-primary 50%, #FAAD14 50%);
+  }
+}
+
+.legendText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.pendingNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  background: rgba(250, 173, 20, 0.1);
+  border: 1rpx solid rgba(250, 173, 20, 0.2);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.pendingNoticeIcon {
+  font-size: $font-size-lg;
+  flex-shrink: 0;
+}
+
+.pendingNoticeText {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: #C97C00;
+  line-height: 1.6;
 }
 
 .selectedDaySection {

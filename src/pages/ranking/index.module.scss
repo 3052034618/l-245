@@ -165,10 +165,26 @@
   padding: $spacing-lg;
   box-shadow: $shadow-card;
   margin-bottom: $spacing-sm;
+  position: relative;
   
   &:active {
     opacity: 0.9;
   }
+  
+  &.cancelled {
+    opacity: 0.6;
+  }
+}
+
+.carpoolCancelledTag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #F53F3F;
+  color: $color-text-white;
+  font-size: $font-size-xs;
+  padding: 4rpx 16rpx;
+  border-radius: 0 $radius-md 0 $radius-sm;
 }
 
 .carpoolHeader {

@@ -9,7 +9,8 @@ export default defineAppConfig({
     'pages/gift-detail/index',
     'pages/carpool-detail/index',
     'pages/route-setting/index',
-    'pages/admin/index'
+    'pages/admin/index',
+    'pages/makeup-detail/index'
   ],
   window: {
     backgroundTextStyle: 'light',

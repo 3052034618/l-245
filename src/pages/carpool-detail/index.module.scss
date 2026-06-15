@@ -133,6 +133,41 @@
   color: $color-text-tertiary;
 }
 
+.remainingSeats {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-success;
+  margin-top: 4rpx;
+}
+
+.cancelledSeats {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.membersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.membersHint {
+  font-size: $font-size-sm;
+  color: $color-success;
+  background: rgba(0, 180, 42, 0.08);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.memberMe {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  margin-left: 8rpx;
+}
+
 .membersList {
   display: flex;
   flex-direction: column;
@@ -244,6 +279,51 @@
   
   &.disabled {
     background: $color-text-disabled;
+  }
+  
+  &.danger {
+    background: #F53F3F;
+  }
+}
+
+.cancelledBanner {
+  background: rgba(245, 63, 63, 0.08);
+  border-bottom: 1rpx solid rgba(245, 63, 63, 0.15);
+  padding: $spacing-md $page-padding;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.cancelledIcon {
+  font-size: $font-size-lg;
+}
+
+.cancelledText {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: #C93C3C;
+  font-weight: $font-weight-medium;
+}
+
+.card.disabled {
+  opacity: 0.6;
+}
+
+.routeCard.disabled {
+  background: $color-bg-hover;
+  color: $color-text-tertiary;
+  
+  .pointLabel, .routeIcon, .timeIcon {
+    opacity: 0.5;
+  }
+  
+  .pointAddress, .timeText {
+    color: $color-text-secondary;
+  }
+  
+  .timeRow {
+    border-top: 1rpx solid $color-divider;
   }
 }
 

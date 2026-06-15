@@ -340,12 +340,106 @@
   text-align: center;
 }
 
+.filterBar {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-sm;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.filterScroll {
+  white-space: nowrap;
+}
+
+.filterList {
+  display: inline-flex;
+  gap: $spacing-sm;
+}
+
+.filterItem {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  
+  &.active {
+    background: $color-primary;
+    color: $color-text-white;
+    
+    .filterCount {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+.filterCount {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0 $spacing-xs;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  min-width: 32rpx;
+  text-align: center;
+}
+
+.batchBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 180, 42, 0.08);
+  border: 1rpx solid rgba(0, 180, 42, 0.2);
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.batchLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.batchText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.batchActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.batchBtn {
+  padding: $spacing-xs $spacing-md;
+  background: $gradient-primary;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  border-radius: $radius-button;
+  
+  &:active {
+    opacity: 0.8;
+  }
+}
+
 .reviewCard {
   background: $color-bg-card;
   border-radius: $radius-lg;
   padding: $spacing-lg;
   box-shadow: $shadow-card;
   margin-bottom: $spacing-md;
+  position: relative;
+}
+
+.checkWrap {
+  position: absolute;
+  top: $spacing-md;
+  left: $spacing-md;
+  z-index: 2;
+  padding: $spacing-xs;
 }
 
 .reviewCardHeader {

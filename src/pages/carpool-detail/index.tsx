@@ -9,7 +9,7 @@ import type { CarpoolInfo, CarpoolMember } from '@/types';
 
 const CarpoolDetailPage: React.FC = () => {
   const router = useRouter();
-  const { carpools, addCarpool, joinCarpool, user } = useAppStore();
+  const { carpools, addCarpool, joinCarpool, cancelCarpool, user } = useAppStore();
   const carpoolId = router.params.id;
   const isCreate = !carpoolId;
   
@@ -30,12 +30,31 @@ const CarpoolDetailPage: React.FC = () => {
     return carpool.members.some(m => m.id === user.id);
   }, [carpool, user.id]);
   
+  const isInitiator = useMemo(() => {
+    if (!carpool) return false;
+    return carpool.initiator === user.name;
+  }, [carpool, user.name]);
+  
   const isFull = useMemo(() => {
     if (!carpool) return false;
     return carpool.status === 'full';
   }, [carpool]);
   
+  const isCancelled = useMemo(() => {
+    if (!carpool) return false;
+    return carpool.status === 'cancelled';
+  }, [carpool]);
+  
+  const remainingSeats = useMemo(() => {
+    if (!carpool) return 0;
+    return carpool.seats - carpool.joinedCount;
+  }, [carpool]);
+  
   const handleJoin = () => {
+    if (isCancelled) {
+      Taro.showToast({ title: '拼车已取消', icon: 'none' });
+      return;
+    }
     if (isFull) {
       Taro.showToast({ title: '座位已满', icon: 'none' });
       return;
@@ -60,6 +79,22 @@ const CarpoolDetailPage: React.FC = () => {
             joinTime: new Date().toLocaleString('zh-CN')
           };
           const result = joinCarpool(carpoolId!, member);
+          Taro.showToast({ title: result.message, icon: result.success ? 'success' : 'none' });
+        }
+      }
+    });
+  };
+  
+  const handleCancel = () => {
+    Taro.showModal({
+      title: '取消拼车',
+      content: '确定要取消这个拼车吗？取消后其他成员将无法继续加入。',
+      confirmText: '确认取消',
+      cancelText: '再想想',
+      confirmColor: '#F53F3F',
+      success: (res) => {
+        if (res.confirm) {
+          const result = cancelCarpool(carpoolId!);
           Taro.showToast({ title: result.message, icon: result.success ? 'success' : 'none' });
         }
       }
@@ -229,9 +264,27 @@ const CarpoolDetailPage: React.FC = () => {
         joinTime: ''
       }));
   
+  const getJoinBtnText = () => {
+    if (isCancelled) return '拼车已取消';
+    if (isFull) return '已满员';
+    if (isJoined) return '已加入';
+    return '加入拼车';
+  };
+  
+  const canJoin = () => {
+    return !isCancelled && !isFull && !isJoined && carpool.status === 'open';
+  };
+  
   return (
     <View className={styles.page}>
-      <View className={styles.routeCard}>
+      {isCancelled && (
+        <View className={styles.cancelledBanner}>
+          <Text className={styles.cancelledIcon}>⚠️</Text>
+          <Text className={styles.cancelledText}>该拼车已被发起人取消</Text>
+        </View>
+      )}
+      
+      <View className={classnames(styles.routeCard, isCancelled && styles.disabled)}>
         <View className={styles.routeRow}>
           <View className={styles.routePoint}>
             <Text className={styles.pointLabel}>起点</Text>
@@ -255,7 +308,7 @@ const CarpoolDetailPage: React.FC = () => {
         </View>
       </View>
       
-      <View className={styles.card} style={{ marginTop: '24rpx' }}>
+      <View className={classnames(styles.card, isCancelled && styles.disabled)} style={{ marginTop: '24rpx' }}>
         <Text className={styles.sectionTitle}>拼车信息</Text>
         <View className={styles.initiatorInfo}>
           <Image className={styles.avatar} src={initiatorAvatarUrl} mode="aspectFill" />
@@ -264,16 +317,32 @@ const CarpoolDetailPage: React.FC = () => {
             <Text className={styles.initiatorLabel}>车主</Text>
           </View>
           <View className={styles.seatsInfo}>
-            <Text className={classnames(styles.seatsNum, isFull && { color: '#F53F3F' })}>
+            <Text className={classnames(
+              styles.seatsNum,
+              (isFull || isCancelled) && { color: isCancelled ? '#86909C' : '#F53F3F' }
+            )}>
               {carpool.joinedCount}/{carpool.seats}
             </Text>
             <Text className={styles.seatsLabel}>已乘车/总座位</Text>
+            {!isCancelled && remainingSeats > 0 && (
+              <Text className={styles.remainingSeats}>剩余 {remainingSeats} 座</Text>
+            )}
+            {isCancelled && (
+              <Text className={styles.cancelledSeats}>已取消</Text>
+            )}
           </View>
         </View>
       </View>
       
-      <View className={styles.card}>
-        <Text className={styles.sectionTitle}>乘车成员 ({displayMembers.length})</Text>
+      <View className={classnames(styles.card, isCancelled && styles.disabled)}>
+        <View className={styles.membersHeader}>
+          <Text className={styles.sectionTitle}>
+            乘车成员 ({displayMembers.length})
+          </Text>
+          {!isCancelled && remainingSeats > 0 && (
+            <Text className={styles.membersHint}>还剩 {remainingSeats} 个座位</Text>
+          )}
+        </View>
         <View className={styles.membersList}>
           {displayMembers.map((member, idx) => (
             <View key={member.id || idx} className={styles.memberItem}>
@@ -283,7 +352,12 @@ const CarpoolDetailPage: React.FC = () => {
                 mode="aspectFill"
               />
               <View className={styles.memberInfo}>
-                <Text className={styles.memberName}>{member.name}</Text>
+                <Text className={styles.memberName}>
+                  {member.name}
+                  {member.id === user.id && (
+                    <Text className={styles.memberMe}>(我)</Text>
+                  )}
+                </Text>
                 <Text className={styles.memberDept}>{member.department}</Text>
               </View>
               {idx === 0 && <Text className={styles.memberRole}>车主</Text>}
@@ -292,7 +366,7 @@ const CarpoolDetailPage: React.FC = () => {
         </View>
       </View>
       
-      <View className={styles.card}>
+      <View className={classnames(styles.card, isCancelled && styles.disabled)}>
         <View className={styles.noticeCard}>
           <Text className={styles.noticeTitle}>💡 温馨提示</Text>
           <View className={styles.noticeText}>
@@ -303,15 +377,35 @@ const CarpoolDetailPage: React.FC = () => {
       </View>
       
       <View className={styles.bottomBar}>
-        <Button className={styles.secondaryBtn} onClick={handleShare}>
-          分享
-        </Button>
-        <Button
-          className={classnames(styles.primaryBtn, (isFull || isJoined) && styles.disabled)}
-          onClick={handleJoin}
-        >
-          {isJoined ? '已加入' : isFull ? '已满员' : '加入拼车'}
-        </Button>
+        {isInitiator && !isCancelled ? (
+          <>
+            <Button className={styles.secondaryBtn} onClick={handleShare}>
+              分享
+            </Button>
+            <Button
+              className={classnames(styles.primaryBtn, styles.danger)}
+              onClick={handleCancel}
+            >
+              取消拼车
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button className={styles.secondaryBtn} onClick={handleShare}>
+              分享
+            </Button>
+            <Button
+              className={classnames(
+                styles.primaryBtn,
+                !canJoin() && styles.disabled
+              )}
+              onClick={handleJoin}
+              disabled={!canJoin()}
+            >
+              {getJoinBtnText()}
+            </Button>
+          </>
+        )}
       </View>
     </View>
   );
