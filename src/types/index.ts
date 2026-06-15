@@ -21,10 +21,13 @@ export interface CommuteRecord {
   isMakeup?: boolean;
   status?: 'pending' | 'approved' | 'rejected';
   receiptUrl?: string;
+  receiptUrls?: string[];
   routeName?: string;
+  remark?: string;
   submitTime?: string;
   reviewTime?: string;
   reviewNote?: string;
+  reviewerName?: string;
 }
 
 export interface GiftItem {

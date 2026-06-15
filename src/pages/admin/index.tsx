@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, Image, ScrollView, Checkbox } from '@tarojs/components';
+import { View, Text, Image, ScrollView, Checkbox, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
 import { useAppStore } from '@/store/useStore';
 import { mockDepartmentRanking } from '@/data/mockRanking';
-import { getTransportOption } from '@/utils/carbon';
-import type { CommuteRecord } from '@/types';
+import { getTransportOption, transportOptions } from '@/utils/carbon';
+import type { CommuteRecord, TransportType } from '@/types';
 
 type ReviewFilter = 'pending' | 'approved' | 'rejected' | 'all';
 
@@ -18,6 +18,10 @@ const AdminPage: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<CommuteRecord | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchDate, setSearchDate] = useState('');
+  const [searchTransport, setSearchTransport] = useState<TransportType | ''>('');
+  const [showSearchPanel, setShowSearchPanel] = useState(false);
   
   const totalEmployees = 185;
   const activeEmployees = 156;
@@ -39,7 +43,11 @@ const AdminPage: React.FC = () => {
     return makeupRecords.filter(r => r.status === 'rejected');
   }, [makeupRecords]);
   
-  const filteredRecords = useMemo(() => {
+  const reviewedRecords = useMemo(() => {
+    return makeupRecords.filter(r => r.status === 'approved' || r.status === 'rejected');
+  }, [makeupRecords]);
+  
+  const baseFiltered = useMemo(() => {
     switch (filter) {
       case 'pending': return pendingRecords;
       case 'approved': return approvedRecords;
@@ -48,6 +56,34 @@ const AdminPage: React.FC = () => {
       default: return pendingRecords;
     }
   }, [filter, pendingRecords, approvedRecords, rejectedRecords, makeupRecords]);
+  
+  const filteredRecords = useMemo(() => {
+    let result = baseFiltered;
+    
+    if (searchKeyword.trim()) {
+      const kw = searchKeyword.trim().toLowerCase();
+      result = result.filter(r => {
+        const opt = getTransportOption(r.type);
+        return (
+          (opt?.name && opt.name.toLowerCase().includes(kw)) ||
+          r.date.includes(kw) ||
+          (r.remark && r.remark.toLowerCase().includes(kw)) ||
+          (r.reviewNote && r.reviewNote.toLowerCase().includes(kw))
+        );
+      });
+    }
+    
+    if (searchDate.trim()) {
+      const d = searchDate.trim();
+      result = result.filter(r => r.date.includes(d));
+    }
+    
+    if (searchTransport) {
+      result = result.filter(r => r.type === searchTransport);
+    }
+    
+    return result;
+  }, [baseFiltered, searchKeyword, searchDate, searchTransport]);
   
   const totalCarbon = useMemo(() => {
     return mockDepartmentRanking.reduce((sum, dept) => sum + dept.totalCarbon, 0);
@@ -69,7 +105,6 @@ const AdminPage: React.FC = () => {
     setTimeout(() => {
       Taro.hideLoading();
       Taro.showToast({ title: '导出成功', icon: 'success' });
-      console.log('[Admin] 数据导出成功');
     }, 1500);
   };
   
@@ -103,7 +138,6 @@ const AdminPage: React.FC = () => {
           const result = batchReviewMakeup(selectedIds, true);
           Taro.showToast({ title: result.message, icon: 'success' });
           setSelectedIds([]);
-          console.log('[Admin] 批量通过', selectedIds);
         }
       }
     });
@@ -119,7 +153,6 @@ const AdminPage: React.FC = () => {
         if (res.confirm) {
           reviewMakeup(record.id, true);
           Taro.showToast({ title: '已通过', icon: 'success' });
-          console.log('[Admin] 审核通过', record.id);
         }
       }
     });
@@ -139,7 +172,6 @@ const AdminPage: React.FC = () => {
     }
     reviewMakeup(selectedRecord.id, false, rejectReason.trim());
     Taro.showToast({ title: '已驳回', icon: 'none' });
-    console.log('[Admin] 审核驳回', selectedRecord.id, rejectReason);
     setShowRejectModal(false);
     setSelectedRecord(null);
   };
@@ -157,6 +189,12 @@ const AdminPage: React.FC = () => {
     } else {
       Taro.showToast({ title: '无凭证图片', icon: 'none' });
     }
+  };
+  
+  const clearSearch = () => {
+    setSearchKeyword('');
+    setSearchDate('');
+    setSearchTransport('');
   };
   
   const getStatusText = (status: string) => {
@@ -224,17 +262,12 @@ const AdminPage: React.FC = () => {
           <Text>总体参与率</Text>
           <Text className={styles.moreLink} onClick={handleViewDetail}>详情</Text>
         </View>
-        
         <View className={styles.rateBar}>
           <Text className={styles.rateValue}>{participationRate}%</Text>
           <View className={styles.rateBarWrap}>
-            <View
-              className={styles.rateBarFill}
-              style={{ width: `${participationRate}%` }}
-            />
+            <View className={styles.rateBarFill} style={{ width: `${participationRate}%` }} />
           </View>
         </View>
-        
         <View className={styles.trendChart}>
           {weekData.map((value, idx) => (
             <View
@@ -253,7 +286,6 @@ const AdminPage: React.FC = () => {
           <Text>部门参与率排行</Text>
           <Text className={styles.moreLink} onClick={handleViewDetail}>全部</Text>
         </View>
-        
         <View className={styles.deptList}>
           {top5Depts.map((dept, idx) => (
             <View key={dept.id} className={styles.deptRankItem}>
@@ -272,30 +304,28 @@ const AdminPage: React.FC = () => {
         <View className={styles.quickActions}>
           <View
             className={styles.actionItem}
-            onClick={() => {
-              setActiveTab('review');
-              setFilter('pending');
-            }}
+            onClick={() => { setActiveTab('review'); setFilter('pending'); }}
           >
             <View className={styles.actionIcon}>
               📝
-              {pendingRecords.length > 0 && (
-                <View className={styles.badge}>{pendingRecords.length}</View>
-              )}
+              {pendingRecords.length > 0 && <View className={styles.badge}>{pendingRecords.length}</View>}
             </View>
             <Text className={styles.actionText}>补录审核</Text>
+          </View>
+          <View
+            className={styles.actionItem}
+            onClick={() => { setActiveTab('review'); setFilter('approved'); }}
+          >
+            <View className={styles.actionIcon}>📋</View>
+            <Text className={styles.actionText}>审核历史</Text>
           </View>
           <View className={styles.actionItem}>
             <View className={styles.actionIcon}>🎉</View>
             <Text className={styles.actionText}>活动管理</Text>
           </View>
           <View className={styles.actionItem}>
-            <View className={styles.actionIcon}>📢</View>
+            <View className={styles.actionIcon}>�</View>
             <Text className={styles.actionText}>发布公告</Text>
-          </View>
-          <View className={styles.actionItem}>
-            <View className={styles.actionIcon}>👥</View>
-            <Text className={styles.actionText}>用户管理</Text>
           </View>
           <View className={styles.actionItem} onClick={handleExportData}>
             <View className={styles.actionIcon}>📊</View>
@@ -308,6 +338,55 @@ const AdminPage: React.FC = () => {
         </View>
       </View>
     </>
+  );
+  
+  const renderSearchPanel = () => (
+    <View className={styles.searchPanel}>
+      <View className={styles.searchRow}>
+        <Text className={styles.searchLabel}>关键词</Text>
+        <Input
+          className={styles.searchInput}
+          value={searchKeyword}
+          onInput={(e) => setSearchKeyword(e.detail.value)}
+          placeholder="日期/交通方式/备注"
+        />
+      </View>
+      <View className={styles.searchRow}>
+        <Text className={styles.searchLabel}>日期</Text>
+        <Input
+          className={styles.searchInput}
+          value={searchDate}
+          onInput={(e) => setSearchDate(e.detail.value)}
+          placeholder="如: 2024-06"
+        />
+      </View>
+      <View className={styles.searchRow}>
+        <Text className={styles.searchLabel}>交通</Text>
+        <ScrollView className={styles.transportScroll} scrollX>
+          <View className={styles.transportChips}>
+            <View
+              className={classnames(styles.chip, searchTransport === '' && styles.chipActive)}
+              onClick={() => setSearchTransport('')}
+            >
+              全部
+            </View>
+            {transportOptions.map(opt => (
+              <View
+                key={opt.type}
+                className={classnames(styles.chip, searchTransport === opt.type && styles.chipActive)}
+                onClick={() => setSearchTransport(opt.type)}
+              >
+                {opt.icon} {opt.name}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      </View>
+      <View className={styles.searchActions}>
+        <View className={styles.clearBtn} onClick={clearSearch}>清除筛选</View>
+        <View className={styles.searchClose} onClick={() => setShowSearchPanel(false)}>收起</View>
+      </View>
+    </View>
   );
   
   const renderReview = () => (
@@ -336,10 +415,7 @@ const AdminPage: React.FC = () => {
               <View
                 key={opt.value}
                 className={classnames(styles.filterItem, filter === opt.value && styles.active)}
-                onClick={() => {
-                  setFilter(opt.value);
-                  setSelectedIds([]);
-                }}
+                onClick={() => { setFilter(opt.value); setSelectedIds([]); }}
               >
                 {opt.label}
                 <View className={styles.filterCount}>{opt.count}</View>
@@ -347,7 +423,15 @@ const AdminPage: React.FC = () => {
             ))}
           </View>
         </ScrollView>
+        <View
+          className={classnames(styles.searchToggle, showSearchPanel && styles.searchActive)}
+          onClick={() => setShowSearchPanel(!showSearchPanel)}
+        >
+          🔍
+        </View>
       </View>
+      
+      {showSearchPanel && renderSearchPanel()}
       
       {filter === 'pending' && filteredRecords.length > 0 && (
         <View className={styles.batchBar}>
@@ -371,11 +455,19 @@ const AdminPage: React.FC = () => {
         </View>
       )}
       
+      {(filter === 'approved' || filter === 'rejected' || filter === 'all') && reviewedRecords.length > 0 && (
+        <View className={styles.historyHint}>
+          共 {reviewedRecords.length} 条审核记录
+        </View>
+      )}
+      
       {filteredRecords.length === 0 ? (
         <View className={styles.emptyReview}>
           <Text style={{ fontSize: '48rpx' }}>🎉</Text>
           <Text style={{ fontSize: '28rpx', color: '#86909C', marginTop: '16rpx' }}>
-            {filter === 'pending' ? '暂无待审核的补录申请' : `暂无${getStatusText(filter)}的补录申请`}
+            {searchKeyword || searchDate || searchTransport
+              ? '没有找到匹配的记录'
+              : `暂无${getStatusText(filter)}的补录申请`}
           </Text>
         </View>
       ) : (
@@ -388,10 +480,7 @@ const AdminPage: React.FC = () => {
               {filter === 'pending' && (
                 <View
                   className={styles.checkWrap}
-                  onClick={(e) => {
-                    e.stopPropagation?.();
-                    toggleSelect(record.id);
-                  }}
+                  onClick={(e) => { e.stopPropagation?.(); toggleSelect(record.id); }}
                 >
                   <Checkbox checked={isSelected} />
                 </View>
@@ -425,8 +514,7 @@ const AdminPage: React.FC = () => {
                 <View className={styles.reviewInfoRow}>
                   <Text className={styles.reviewInfoLabel}>交通方式</Text>
                   <Text className={styles.reviewInfoValue}>
-                    <Text style={{ marginRight: '8rpx' }}>{option?.icon}</Text>
-                    {option?.name} · {record.direction === 'go' ? '上班' : '下班'}
+                    {option?.icon} {option?.name} · {record.direction === 'go' ? '上班' : '下班'}
                   </Text>
                 </View>
                 <View className={styles.reviewInfoRow}>
@@ -435,24 +523,26 @@ const AdminPage: React.FC = () => {
                 </View>
                 <View className={styles.reviewInfoRow}>
                   <Text className={styles.reviewInfoLabel}>预计积分</Text>
-                  <Text className={styles.reviewInfoValue} style={{ color: '#FAAD14' }}>
-                    +{record.points} 分
-                  </Text>
-                </View>
-                <View className={styles.reviewInfoRow}>
-                  <Text className={styles.reviewInfoLabel}>预计减排</Text>
-                  <Text className={styles.reviewInfoValue} style={{ color: '#00B42A' }}>
-                    -{record.carbonSaved.toFixed(2)} kg
-                  </Text>
+                  <Text className={styles.reviewInfoValue} style={{ color: '#FAAD14' }}>+{record.points} 分</Text>
                 </View>
                 <View className={styles.reviewInfoRow}>
                   <Text className={styles.reviewInfoLabel}>提交时间</Text>
                   <Text className={styles.reviewInfoValue}>{record.submitTime || '-'}</Text>
                 </View>
+                {record.reviewerName && record.reviewTime && (
+                  <View className={styles.reviewInfoRow}>
+                    <Text className={styles.reviewInfoLabel}>审核信息</Text>
+                    <Text className={styles.reviewInfoValue}>
+                      {record.reviewerName} · {record.reviewTime}
+                    </Text>
+                  </View>
+                )}
                 {record.reviewNote && (
                   <View className={styles.reviewInfoRow}>
-                    <Text className={styles.reviewInfoLabel}>{record.status === 'rejected' ? '驳回原因' : '审核备注'}</Text>
-                    <Text className={styles.reviewInfoValue} style={{ color: '#F53F3F' }}>
+                    <Text className={styles.reviewInfoLabel}>
+                      {record.status === 'rejected' ? '驳回原因' : '审核备注'}
+                    </Text>
+                    <Text className={styles.reviewInfoValue} style={{ color: record.status === 'rejected' ? '#F53F3F' : '#86909C' }}>
                       {record.reviewNote}
                     </Text>
                   </View>
@@ -463,9 +553,6 @@ const AdminPage: React.FC = () => {
                 <View className={styles.reviewReceipt}>
                   <Text className={styles.reviewReceiptLabel}>
                     凭证图片 ({record.receiptUrls.length})
-                    <Text style={{ color: '#00B42A', marginLeft: '8rpx', fontSize: '22rpx' }}>
-                      点击预览
-                    </Text>
                   </Text>
                   <ScrollView className={styles.receiptScroll} scrollX>
                     <View className={styles.receiptList}>
@@ -475,10 +562,7 @@ const AdminPage: React.FC = () => {
                           className={styles.receiptImage}
                           src={url}
                           mode="aspectFill"
-                          onClick={(e) => {
-                            e.stopPropagation?.();
-                            handlePreviewImage(record);
-                          }}
+                          onClick={(e) => { e.stopPropagation?.(); handlePreviewImage(record); }}
                         />
                       ))}
                     </View>
@@ -490,19 +574,13 @@ const AdminPage: React.FC = () => {
                 <View className={styles.reviewActions}>
                   <View
                     className={classnames(styles.reviewBtn, styles.reject)}
-                    onClick={(e) => {
-                      e.stopPropagation?.();
-                      handleRejectClick(record);
-                    }}
+                    onClick={(e) => { e.stopPropagation?.(); handleRejectClick(record); }}
                   >
                     驳回
                   </View>
                   <View
                     className={classnames(styles.reviewBtn, styles.approve)}
-                    onClick={(e) => {
-                      e.stopPropagation?.();
-                      handleApprove(record);
-                    }}
+                    onClick={(e) => { e.stopPropagation?.(); handleApprove(record); }}
                   >
                     通过
                   </View>
@@ -522,24 +600,16 @@ const AdminPage: React.FC = () => {
           <Text className={styles.headerTitle}>👑 管理员面板</Text>
           <Text className={styles.headerSub}>低碳通勤数据管理中心</Text>
         </View>
-        
         <View className={styles.adminTabs}>
           <View
             className={classnames(styles.adminTab, activeTab === 'overview' && styles.active)}
-            onClick={() => {
-              setActiveTab('overview');
-              setSelectedIds([]);
-            }}
+            onClick={() => { setActiveTab('overview'); setSelectedIds([]); }}
           >
             数据概览
           </View>
           <View
             className={classnames(styles.adminTab, activeTab === 'review' && styles.active)}
-            onClick={() => {
-              setActiveTab('review');
-              setFilter('pending');
-              setSelectedIds([]);
-            }}
+            onClick={() => { setActiveTab('review'); setFilter('pending'); setSelectedIds([]); }}
           >
             补录审核
             {pendingRecords.length > 0 && (

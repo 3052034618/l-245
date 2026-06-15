@@ -217,6 +217,7 @@
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
+  display: block;
 }
 
 .initiatorLabel {
@@ -228,15 +229,46 @@
   margin-left: $spacing-xs;
 }
 
+.memberAvatars {
+  display: flex;
+  align-items: center;
+  margin-top: $spacing-xs;
+}
+
+.miniAvatar {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  border: 2rpx solid $color-bg-card;
+}
+
+.moreCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-left: $spacing-xs;
+}
+
 .carpoolSeats {
   font-size: $font-size-sm;
   color: $color-text-secondary;
   flex-shrink: 0;
+  text-align: right;
   
   .num {
     color: $color-carpool;
     font-weight: $font-weight-semibold;
   }
+}
+
+.remainingTag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: $color-success;
+  background: rgba(0, 180, 42, 0.08);
+  padding: 2rpx 10rpx;
+  border-radius: $radius-xs;
+  margin-left: 8rpx;
+  vertical-align: middle;
 }
 
 .carpoolRoute {

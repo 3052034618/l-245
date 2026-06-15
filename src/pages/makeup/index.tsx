@@ -72,16 +72,10 @@ const MakeupPage: React.FC = () => {
     }
     
     if (receiptUrls.length === 0) {
-      Taro.showModal({
-        title: '缺少凭证',
-        content: '补录通勤需要上传相关凭证（如地铁票、公交记录、骑行记录截图等），无凭证可能导致审核不通过。是否继续提交？',
-        confirmText: '继续提交',
-        cancelText: '去上传',
-        success: (res) => {
-          if (!res.confirm) {
-            handleChooseImage();
-          }
-        }
+      Taro.showToast({
+        title: '请先上传凭证图片',
+        icon: 'none',
+        duration: 2000
       });
       return;
     }

@@ -270,6 +270,23 @@
   }
 }
 
+.recordSection {
+  margin-bottom: $spacing-md;
+}
+
+.sectionLabel {
+  display: block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  padding-left: $spacing-xs;
+  
+  &.pendingLabel {
+    color: #FAAD14;
+  }
+}
+
 .recordList {
   display: flex;
   flex-direction: column;

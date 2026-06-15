@@ -257,7 +257,7 @@ export const useAppStore = create<AppState>((set, get) => {
         return { success: false, message: '拼车已关闭或已满员' };
       }
       
-      if (carpool.joinedCount >= carpool.seats) {
+      if (carpool.members.length >= carpool.seats) {
         return { success: false, message: '座位已满' };
       }
       
@@ -265,7 +265,8 @@ export const useAppStore = create<AppState>((set, get) => {
         return { success: false, message: '您已加入该拼车' };
       }
       
-      const newJoinedCount = carpool.joinedCount + 1;
+      const newMembers = [...carpool.members, member];
+      const newJoinedCount = newMembers.length;
       const newStatus = newJoinedCount >= carpool.seats ? 'full' : 'open';
       
       set(s => ({
@@ -275,7 +276,7 @@ export const useAppStore = create<AppState>((set, get) => {
                 ...c,
                 joinedCount: newJoinedCount,
                 status: newStatus,
-                members: [...c.members, member]
+                members: newMembers
               }
             : c
         ),
@@ -287,18 +288,22 @@ export const useAppStore = create<AppState>((set, get) => {
     },
     
     leaveCarpool: (carpoolId: string, memberId: string) => {
-      set(state => ({
-        carpools: state.carpools.map(c => 
-          c.id === carpoolId
-            ? {
-                ...c,
-                joinedCount: Math.max(0, c.joinedCount - 1),
-                status: 'open',
-                members: c.members.filter(m => m.id !== memberId)
-              }
-            : c
-        )
-      }));
+      set(state => {
+        const carpool = state.carpools.find(c => c.id === carpoolId);
+        const newMembers = carpool ? carpool.members.filter(m => m.id !== memberId) : [];
+        return {
+          carpools: state.carpools.map(c => 
+            c.id === carpoolId
+              ? {
+                  ...c,
+                  joinedCount: newMembers.length,
+                  status: 'open',
+                  members: newMembers
+                }
+              : c
+          )
+        };
+      });
       get()._persist();
       console.log('[Store] leaveCarpool', carpoolId, memberId);
     },
@@ -324,7 +329,8 @@ export const useAppStore = create<AppState>((set, get) => {
                   ...r,
                   status: approved ? 'approved' : 'rejected',
                   reviewTime: new Date().toLocaleString('zh-CN'),
-                  reviewNote: note
+                  reviewNote: note,
+                  reviewerName: state.user.name
                 }
               : r
           ),
@@ -353,6 +359,7 @@ export const useAppStore = create<AppState>((set, get) => {
       
       set(s => {
         let newUser = s.user;
+        const reviewerName = s.user.name;
         if (approved && totalPoints > 0) {
           newUser = {
             ...s.user,
@@ -369,7 +376,8 @@ export const useAppStore = create<AppState>((set, get) => {
                   ...r,
                   status: approved ? 'approved' : 'rejected',
                   reviewTime: new Date().toLocaleString('zh-CN'),
-                  reviewNote: note
+                  reviewNote: note,
+                  reviewerName
                 }
               : r
           ),

@@ -138,6 +138,8 @@ const RankingPage: React.FC = () => {
           
           {carpools.map(carpool => {
             const isCancelled = carpool.status === 'cancelled';
+            const occupiedCount = carpool.members.length;
+            const remaining = carpool.seats - occupiedCount;
             return (
               <View
                 key={carpool.id}
@@ -162,15 +164,32 @@ const RankingPage: React.FC = () => {
                       {carpool.initiator}
                       <Text className={styles.initiatorLabel}>发起人</Text>
                     </Text>
+                    {occupiedCount > 0 && (
+                      <Text className={styles.memberAvatars}>
+                        {carpool.members.slice(0, 3).map((m, i) => (
+                          <Image
+                            key={m.id}
+                            className={styles.miniAvatar}
+                            src={`https://picsum.photos/id/${m.avatarId}/80/80`}
+                            mode="aspectFill"
+                            style={{ marginLeft: i > 0 ? '-12rpx' : '0', zIndex: 10 - i }}
+                          />
+                        ))}
+                        {occupiedCount > 3 && <Text className={styles.moreCount}>+{occupiedCount - 3}</Text>}
+                      </Text>
+                    )}
                   </View>
                   <View className={styles.carpoolSeats}>
                     <Text className={classnames(
                       styles.num,
                       (carpool.status === 'full' || isCancelled) && { color: isCancelled ? '#86909C' : '#F53F3F' }
                     )}>
-                      {carpool.joinedCount}
+                      {occupiedCount}
                     </Text>
                     /{carpool.seats}人
+                    {!isCancelled && remaining > 0 && (
+                      <Text className={styles.remainingTag}>剩{remaining}座</Text>
+                    )}
                   </View>
                 </View>
                 

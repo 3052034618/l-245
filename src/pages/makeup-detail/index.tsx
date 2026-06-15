@@ -156,9 +156,18 @@ const MakeupDetailPage: React.FC = () => {
           {record.status === 'rejected' && record.reviewNote && (
             <View className={styles.rejectCard}>
               <Text className={styles.rejectTitle}>
-                <Text>❌</Text> 驳回原因
+                ❌ 驳回原因
               </Text>
               <Text className={styles.rejectContent}>{record.reviewNote}</Text>
+            </View>
+          )}
+          
+          {record.status === 'approved' && record.reviewNote && (
+            <View className={styles.approveCard}>
+              <Text className={styles.approveTitle}>
+                ✅ 审核备注
+              </Text>
+              <Text className={styles.approveContent}>{record.reviewNote}</Text>
             </View>
           )}
           
@@ -185,6 +194,9 @@ const MakeupDetailPage: React.FC = () => {
             <Text>提交时间：{record.submitTime || '-'}</Text>
             {record.reviewTime && (
               <Text>审核时间：{record.reviewTime}</Text>
+            )}
+            {record.reviewerName && (
+              <Text>审核人：{record.reviewerName}</Text>
             )}
           </View>
         </View>

@@ -24,9 +24,7 @@ const CalendarPage: React.FC = () => {
   }, [commuteRecords, currentYear, currentMonth]);
   
   const effectiveRecords = useMemo(() => {
-    return monthRecords.filter(r => 
-      !r.isMakeup || r.status === 'approved'
-    );
+    return monthRecords.filter(r => !r.isMakeup || r.status === 'approved');
   }, [monthRecords]);
   
   const pendingRecords = useMemo(() => {
@@ -37,6 +35,7 @@ const CalendarPage: React.FC = () => {
     const totalPoints = effectiveRecords.reduce((sum, r) => sum + r.points, 0);
     const totalCarbon = effectiveRecords.reduce((sum, r) => sum + r.carbonSaved, 0);
     const totalDistance = effectiveRecords.reduce((sum, r) => sum + r.distance, 0);
+    const effectiveCount = effectiveRecords.length;
     const uniqueDays = new Set(effectiveRecords.map(r => r.date)).size;
     
     const pendingPoints = pendingRecords.reduce((sum, r) => sum + r.points, 0);
@@ -47,6 +46,7 @@ const CalendarPage: React.FC = () => {
       points: totalPoints,
       carbon: totalCarbon.toFixed(1),
       distance: totalDistance.toFixed(1),
+      effectiveCount,
       days: uniqueDays,
       pendingPoints,
       pendingCarbon: pendingCarbon.toFixed(1),
@@ -54,8 +54,12 @@ const CalendarPage: React.FC = () => {
     };
   }, [effectiveRecords, pendingRecords]);
   
-  const selectedDayRecords = useMemo(() => {
-    return commuteRecords.filter(r => r.date === selectedDate);
+  const selectedDayEffective = useMemo(() => {
+    return commuteRecords.filter(r => r.date === selectedDate && (!r.isMakeup || r.status === 'approved'));
+  }, [commuteRecords, selectedDate]);
+  
+  const selectedDayPending = useMemo(() => {
+    return commuteRecords.filter(r => r.date === selectedDate && r.isMakeup && r.status === 'pending');
   }, [commuteRecords, selectedDate]);
   
   const getRecordStatus = (date: string) => {
@@ -183,17 +187,20 @@ const CalendarPage: React.FC = () => {
           </View>
           <View className={styles.statCard}>
             <View className={styles.statValue}>
-              {monthStats.days}
-              <Text className={styles.unit}>天</Text>
+              {monthStats.effectiveCount}
+              <Text className={styles.unit}>次</Text>
             </View>
-            <Text className={styles.statLabel}>有效打卡</Text>
+            <Text className={styles.statLabel}>有效通勤</Text>
+            {monthStats.pendingCount > 0 && (
+              <Text className={styles.pendingHint}>待审核 {monthStats.pendingCount}次</Text>
+            )}
           </View>
           <View className={styles.statCard}>
             <View className={styles.statValue}>
-              {monthStats.distance}
-              <Text className={styles.unit}>km</Text>
+              {monthStats.days}
+              <Text className={styles.unit}>天</Text>
             </View>
-            <Text className={styles.statLabel}>总里程</Text>
+            <Text className={styles.statLabel}>打卡天数</Text>
           </View>
         </View>
         
@@ -201,7 +208,7 @@ const CalendarPage: React.FC = () => {
           <View className={styles.pendingNotice}>
             <Text className={styles.pendingNoticeIcon}>⏳</Text>
             <Text className={styles.pendingNoticeText}>
-              您有 {monthStats.pendingCount} 条补录申请正在等待审核，通过后积分将自动到账
+              您有 {monthStats.pendingCount} 条补录申请待审核，通过后积分和次数将自动并入统计
             </Text>
           </View>
         )}
@@ -212,19 +219,43 @@ const CalendarPage: React.FC = () => {
             <Text className={styles.date}>{selectedDate}</Text>
           </View>
           
-          {selectedDayRecords.length > 0 ? (
-            <View className={styles.recordList}>
-              {selectedDayRecords.map(record => (
-                <CommuteItem
-                  key={record.id}
-                  record={record}
-                  onClick={() => {
-                    Taro.navigateTo({ url: `/pages/makeup-detail/index?id=${record.id}&source=calendar` });
-                  }}
-                />
-              ))}
+          {selectedDayEffective.length > 0 && (
+            <View className={styles.recordSection}>
+              <Text className={styles.sectionLabel}>✅ 已生效 ({selectedDayEffective.length}次)</Text>
+              <View className={styles.recordList}>
+                {selectedDayEffective.map(record => (
+                  <CommuteItem
+                    key={record.id}
+                    record={record}
+                    onClick={() => {
+                      Taro.navigateTo({ url: `/pages/makeup-detail/index?id=${record.id}&source=calendar` });
+                    }}
+                  />
+                ))}
+              </View>
             </View>
-          ) : (
+          )}
+          
+          {selectedDayPending.length > 0 && (
+            <View className={styles.recordSection}>
+              <Text className={classnames(styles.sectionLabel, styles.pendingLabel)}>
+                ⏳ 待审核 ({selectedDayPending.length}次)
+              </Text>
+              <View className={styles.recordList}>
+                {selectedDayPending.map(record => (
+                  <CommuteItem
+                    key={record.id}
+                    record={record}
+                    onClick={() => {
+                      Taro.navigateTo({ url: `/pages/makeup-detail/index?id=${record.id}&source=calendar` });
+                    }}
+                  />
+                ))}
+              </View>
+            </View>
+          )}
+          
+          {selectedDayEffective.length === 0 && selectedDayPending.length === 0 && (
             <View className={styles.emptyTip}>
               <View className={styles.icon}>📅</View>
               <Text className={styles.text}>当天没有通勤记录</Text>
