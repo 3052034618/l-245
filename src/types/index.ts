@@ -22,6 +22,9 @@ export interface CommuteRecord {
   status?: 'pending' | 'approved' | 'rejected';
   receiptUrl?: string;
   routeName?: string;
+  submitTime?: string;
+  reviewTime?: string;
+  reviewNote?: string;
 }
 
 export interface GiftItem {
@@ -64,10 +67,19 @@ export interface DepartmentRank {
   rank: number;
 }
 
+export interface CarpoolMember {
+  id: string;
+  name: string;
+  avatarId: number;
+  department: string;
+  joinTime: string;
+}
+
 export interface CarpoolInfo {
   id: string;
   initiator: string;
   initiatorAvatar: number;
+  initiatorDept: string;
   startLocation: string;
   endLocation: string;
   startTime: string;
@@ -75,6 +87,9 @@ export interface CarpoolInfo {
   joinedCount: number;
   date: string;
   routeName?: string;
+  members: CarpoolMember[];
+  createTime: string;
+  status: 'open' | 'full' | 'cancelled';
 }
 
 export interface UserInfo {
@@ -114,4 +129,12 @@ export interface MonthlyStats {
   totalCommutes: number;
   totalDistance: number;
   transportStats: { type: TransportType; count: number; distance: number }[];
+}
+
+export interface PendingMakeupRecord {
+  record: CommuteRecord;
+  userId: string;
+  userName: string;
+  userDept: string;
+  submitTime: string;
 }

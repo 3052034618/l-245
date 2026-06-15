@@ -74,6 +74,27 @@
   border-radius: $radius-xs;
 }
 
+.statusTag {
+  font-size: $font-size-xs;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  
+  &.pending {
+    color: #FAAD14;
+    background: rgba(250, 173, 20, 0.1);
+  }
+  
+  &.rejected {
+    color: #F53F3F;
+    background: rgba(245, 63, 63, 0.1);
+  }
+}
+
+.reviewNote {
+  color: #F53F3F;
+  @include text-ellipsis;
+}
+
 .subRow {
   display: flex;
   align-items: center;

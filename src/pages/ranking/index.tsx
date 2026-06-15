@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, Image, ScrollView } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
-import { mockPersonalRanking, mockDepartmentRanking, mockCarpoolList } from '@/data/mockRanking';
+import { useAppStore } from '@/store/useStore';
+import { mockPersonalRanking, mockDepartmentRanking } from '@/data/mockRanking';
 import RankItem from '@/components/RankItem';
+import type { CarpoolMember } from '@/types';
 
 const RankingPage: React.FC = () => {
+  const { carpools, joinCarpool, user } = useAppStore();
   const [activeTab, setActiveTab] = useState<'personal' | 'department'>('personal');
   
   const topThree = mockPersonalRanking.slice(0, 3);
   const restList = mockPersonalRanking.slice(3);
-  const deptTopThree = mockDepartmentRanking.slice(0, 3);
-  const deptRestList = mockDepartmentRanking.slice(3);
   
   const handleJoinCarpool = (carpoolId: string) => {
     Taro.showModal({
@@ -22,8 +23,15 @@ const RankingPage: React.FC = () => {
       cancelText: '再想想',
       success: (res) => {
         if (res.confirm) {
-          Taro.showToast({ title: '加入成功', icon: 'success' });
-          console.log('[Ranking] 加入拼车', carpoolId);
+          const member: CarpoolMember = {
+            id: user.id,
+            name: user.name,
+            avatarId: user.avatarId,
+            department: user.department,
+            joinTime: new Date().toLocaleString('zh-CN')
+          };
+          const result = joinCarpool(carpoolId, member);
+          Taro.showToast({ title: result.message, icon: result.success ? 'success' : 'none' });
         }
       }
     });
@@ -42,6 +50,17 @@ const RankingPage: React.FC = () => {
     if (rank === 2) return 'silver';
     if (rank === 3) return 'bronze';
     return '';
+  };
+  
+  const getJoinBtnText = (carpool: any) => {
+    if (carpool.status === 'full') return '已满员';
+    if (carpool.status === 'cancelled') return '已取消';
+    if (carpool.members.some((m: CarpoolMember) => m.id === user.id)) return '已加入';
+    return '加入拼车';
+  };
+  
+  const canJoin = (carpool: any) => {
+    return carpool.status === 'open' && !carpool.members.some((m: CarpoolMember) => m.id === user.id);
   };
   
   return (
@@ -114,10 +133,10 @@ const RankingPage: React.FC = () => {
         <View className={styles.carpoolSection}>
           <View className={styles.sectionHeader}>
             <Text className={styles.sectionTitle}>🚗 拼车专区</Text>
-            <Text className={styles.sectionMore}>查看更多</Text>
+            <Text className={styles.sectionMore}>共 {carpools.length} 条</Text>
           </View>
           
-          {mockCarpoolList.map(carpool => (
+          {carpools.map(carpool => (
             <View
               key={carpool.id}
               className={styles.carpoolCard}
@@ -138,7 +157,9 @@ const RankingPage: React.FC = () => {
                   </Text>
                 </View>
                 <View className={styles.carpoolSeats}>
-                  <Text className={styles.num}>{carpool.joinedCount}</Text>
+                  <Text className={classnames(styles.num, carpool.status === 'full' && { color: '#F53F3F' })}>
+                    {carpool.joinedCount}
+                  </Text>
                   /{carpool.seats}人
                 </View>
               </View>
@@ -161,13 +182,15 @@ const RankingPage: React.FC = () => {
                   {carpool.date} {carpool.startTime}
                 </Text>
                 <View
-                  className={styles.joinBtn}
+                  className={classnames(styles.joinBtn, !canJoin(carpool) && { background: '#C9CDD4' })}
                   onClick={(e) => {
                     e.stopPropagation?.();
-                    handleJoinCarpool(carpool.id);
+                    if (canJoin(carpool)) {
+                      handleJoinCarpool(carpool.id);
+                    }
                   }}
                 >
-                  加入拼车
+                  {getJoinBtnText(carpool)}
                 </View>
               </View>
             </View>

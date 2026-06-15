@@ -41,6 +41,47 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
+.adminTabs {
+  display: flex;
+  margin-top: $spacing-lg;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-button;
+  padding: 6rpx;
+}
+
+.adminTab {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-sm 0;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.8);
+  position: relative;
+  
+  &.active {
+    background: $color-bg-card;
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.tabBadge {
+  position: absolute;
+  top: $spacing-xs;
+  right: 20%;
+  min-width: 32rpx;
+  height: 32rpx;
+  background: #F53F3F;
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: $font-size-xs;
+  line-height: 32rpx;
+  padding: 0 8rpx;
+  text-align: center;
+}
+
 .content {
   padding: 0 $page-padding;
   margin-top: -40rpx;
@@ -207,6 +248,22 @@
   justify-content: center;
   background: $color-primary-bg;
   border-radius: $radius-md;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  background: #F53F3F;
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: $font-size-xs;
+  line-height: 32rpx;
+  padding: 0 8rpx;
+  text-align: center;
 }
 
 .actionText {
@@ -241,4 +298,276 @@
   font-size: $font-size-xs;
   color: $color-text-tertiary;
   white-space: nowrap;
+}
+
+.reviewStats {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+}
+
+.reviewStat {
+  flex: 1;
+  text-align: center;
+}
+
+.reviewStatNum {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+}
+
+.reviewStatLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.reviewStatDivider {
+  width: 1rpx;
+  height: 60rpx;
+  background: $color-divider;
+}
+
+.emptyReview {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 80rpx $spacing-lg;
+  box-shadow: $shadow-card;
+  text-align: center;
+}
+
+.reviewCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.reviewCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+  margin-bottom: $spacing-md;
+}
+
+.reviewUser {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.reviewAvatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+}
+
+.reviewUserName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: block;
+}
+
+.reviewUserDept {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.reviewStatus {
+  font-size: $font-size-xs;
+  padding: 6rpx 16rpx;
+  border-radius: $radius-xs;
+  
+  &.pending {
+    color: #FAAD14;
+    background: rgba(250, 173, 20, 0.1);
+  }
+  
+  &.approved {
+    color: $color-success;
+    background: rgba(0, 180, 42, 0.1);
+  }
+  
+  &.rejected {
+    color: #F53F3F;
+    background: rgba(245, 63, 63, 0.1);
+  }
+}
+
+.reviewInfo {
+  margin-bottom: $spacing-md;
+}
+
+.reviewInfoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  
+  & + & {
+    border-top: 1rpx dashed $color-divider;
+  }
+}
+
+.reviewInfoLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.reviewInfoValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.reviewReceipt {
+  margin-bottom: $spacing-md;
+}
+
+.reviewReceiptLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.receiptScroll {
+  white-space: nowrap;
+}
+
+.receiptList {
+  display: inline-flex;
+  gap: $spacing-sm;
+}
+
+.receiptImage {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-sm;
+  flex-shrink: 0;
+}
+
+.reviewActions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.reviewBtn {
+  flex: 1;
+  height: 72rpx;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  
+  &.reject {
+    background: $color-bg-hover;
+    color: $color-text-secondary;
+  }
+  
+  &.approve {
+    background: $gradient-primary;
+    color: $color-text-white;
+  }
+  
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.modalMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg * 2;
+}
+
+.rejectModal {
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+}
+
+.modalTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.modalSub {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-md;
+}
+
+.textareaWrap {
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160rpx;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  resize: none;
+}
+
+.modalActions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.modalBtn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  
+  &.cancel {
+    background: $color-bg-hover;
+    color: $color-text-secondary;
+  }
+  
+  &.confirm {
+    background: $gradient-primary;
+    color: $color-text-white;
+  }
+  
+  &.confirmReject {
+    background: #F53F3F;
+    color: $color-text-white;
+  }
+  
+  &:active {
+    opacity: 0.8;
+  }
 }

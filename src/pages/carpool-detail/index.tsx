@@ -3,38 +3,45 @@ import { View, Text, Image, Button, Input } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
-import { mockCarpoolList } from '@/data/mockRanking';
-import type { CarpoolInfo } from '@/types';
+import { useAppStore } from '@/store/useStore';
+import { getToday, getCurrentTime } from '@/utils/date';
+import type { CarpoolInfo, CarpoolMember } from '@/types';
 
 const CarpoolDetailPage: React.FC = () => {
   const router = useRouter();
+  const { carpools, addCarpool, joinCarpool, user } = useAppStore();
   const carpoolId = router.params.id;
   const isCreate = !carpoolId;
   
-  const [carpool, setCarpool] = useState<CarpoolInfo | null>(null);
   const [startLocation, setStartLocation] = useState('');
   const [endLocation, setEndLocation] = useState('');
   const [startTime, setStartTime] = useState('08:30');
+  const [date, setDate] = useState(getToday());
   const [seats, setSeats] = useState('4');
-  const [isJoined, setIsJoined] = useState(false);
+  const [routeName, setRouteName] = useState('');
   
-  React.useEffect(() => {
-    if (carpoolId) {
-      const found = mockCarpoolList.find(c => c.id === carpoolId);
-      if (found) {
-        setCarpool(found);
-      }
-    }
-  }, [carpoolId]);
+  const carpool = useMemo(() => {
+    if (!carpoolId) return null;
+    return carpools.find(c => c.id === carpoolId) || null;
+  }, [carpools, carpoolId]);
+  
+  const isJoined = useMemo(() => {
+    if (!carpool) return false;
+    return carpool.members.some(m => m.id === user.id);
+  }, [carpool, user.id]);
   
   const isFull = useMemo(() => {
     if (!carpool) return false;
-    return carpool.joinedCount >= carpool.seats;
+    return carpool.status === 'full';
   }, [carpool]);
   
   const handleJoin = () => {
     if (isFull) {
       Taro.showToast({ title: '座位已满', icon: 'none' });
+      return;
+    }
+    if (isJoined) {
+      Taro.showToast({ title: '您已加入', icon: 'none' });
       return;
     }
     
@@ -45,9 +52,15 @@ const CarpoolDetailPage: React.FC = () => {
       cancelText: '取消',
       success: (res) => {
         if (res.confirm) {
-          setIsJoined(true);
-          Taro.showToast({ title: '加入成功', icon: 'success' });
-          console.log('[Carpool] 加入拼车成功', carpoolId);
+          const member: CarpoolMember = {
+            id: user.id,
+            name: user.name,
+            avatarId: user.avatarId,
+            department: user.department,
+            joinTime: new Date().toLocaleString('zh-CN')
+          };
+          const result = joinCarpool(carpoolId!, member);
+          Taro.showToast({ title: result.message, icon: result.success ? 'success' : 'none' });
         }
       }
     });
@@ -59,22 +72,53 @@ const CarpoolDetailPage: React.FC = () => {
       return;
     }
     
+    const seatsNum = parseInt(seats) || 4;
+    
+    const initiatorMember: CarpoolMember = {
+      id: user.id,
+      name: user.name,
+      avatarId: user.avatarId,
+      department: user.department,
+      joinTime: new Date().toLocaleString('zh-CN')
+    };
+    
+    const newCarpool: CarpoolInfo = {
+      id: `carpool-${Date.now()}`,
+      initiator: user.name,
+      initiatorAvatar: user.avatarId,
+      initiatorDept: user.department,
+      startLocation,
+      endLocation,
+      startTime,
+      seats: seatsNum,
+      joinedCount: 1,
+      date,
+      routeName: routeName || `${startLocation}-${endLocation}`,
+      members: [initiatorMember],
+      createTime: new Date().toLocaleString('zh-CN'),
+      status: seatsNum <= 1 ? 'full' : 'open'
+    };
+    
     Taro.showLoading({ title: '创建中...' });
     setTimeout(() => {
+      addCarpool(newCarpool);
       Taro.hideLoading();
       Taro.showToast({ title: '创建成功', icon: 'success' });
-      console.log('[Carpool] 创建拼车成功', { startLocation, endLocation, startTime, seats });
+      console.log('[Carpool] 创建拼车成功', newCarpool);
       setTimeout(() => {
         Taro.navigateBack();
-      }, 1500);
-    }, 1000);
+      }, 1000);
+    }, 800);
   };
   
   const handleShare = () => {
     Taro.showToast({ title: '分享功能', icon: 'none' });
   };
   
-  const memberAvatars = [64, 91, 177];
+  const defaultMembers = [
+    { name: '张明', dept: '技术研发部', avatar: 64 },
+    { name: '李华', dept: '产品设计部', avatar: 91 }
+  ];
   
   if (isCreate) {
     return (
@@ -103,6 +147,16 @@ const CarpoolDetailPage: React.FC = () => {
           </View>
           
           <View className={styles.formItem}>
+            <Text className={styles.formLabel}>拼车日期</Text>
+            <Input
+              className={styles.formInput}
+              value={date}
+              onInput={(e) => setDate(e.detail.value)}
+              placeholder="请输入日期"
+            />
+          </View>
+          
+          <View className={styles.formItem}>
             <Text className={styles.formLabel}>出发时间</Text>
             <Input
               className={styles.formInput}
@@ -120,6 +174,16 @@ const CarpoolDetailPage: React.FC = () => {
               value={seats}
               onInput={(e) => setSeats(e.detail.value)}
               placeholder="请输入座位数"
+            />
+          </View>
+          
+          <View className={styles.formItem}>
+            <Text className={styles.formLabel}>路线名称</Text>
+            <Input
+              className={styles.formInput}
+              value={routeName}
+              onInput={(e) => setRouteName(e.detail.value)}
+              placeholder="可选，如：天通苑-科技园"
             />
           </View>
         </View>
@@ -146,12 +210,24 @@ const CarpoolDetailPage: React.FC = () => {
   if (!carpool) {
     return (
       <View className={styles.page}>
-        <Text>加载中...</Text>
+        <View style={{ padding: '100rpx', textAlign: 'center' }}>
+          <Text>拼车不存在或已取消</Text>
+        </View>
       </View>
     );
   }
   
   const initiatorAvatarUrl = `https://picsum.photos/id/${carpool.initiatorAvatar}/100/100`;
+  
+  const displayMembers = carpool.members.length > 0 
+    ? carpool.members 
+    : defaultMembers.map((m, i) => ({
+        id: `mock-${i}`,
+        name: m.name,
+        avatarId: m.avatar,
+        department: m.dept,
+        joinTime: ''
+      }));
   
   return (
     <View className={styles.page}>
@@ -188,7 +264,7 @@ const CarpoolDetailPage: React.FC = () => {
             <Text className={styles.initiatorLabel}>车主</Text>
           </View>
           <View className={styles.seatsInfo}>
-            <Text className={styles.seatsNum}>
+            <Text className={classnames(styles.seatsNum, isFull && { color: '#F53F3F' })}>
               {carpool.joinedCount}/{carpool.seats}
             </Text>
             <Text className={styles.seatsLabel}>已乘车/总座位</Text>
@@ -197,22 +273,18 @@ const CarpoolDetailPage: React.FC = () => {
       </View>
       
       <View className={styles.card}>
-        <Text className={styles.sectionTitle}>乘车成员</Text>
+        <Text className={styles.sectionTitle}>乘车成员 ({displayMembers.length})</Text>
         <View className={styles.membersList}>
-          {memberAvatars.map((avatarId, idx) => (
-            <View key={idx} className={styles.memberItem}>
+          {displayMembers.map((member, idx) => (
+            <View key={member.id || idx} className={styles.memberItem}>
               <Image
                 className={styles.memberAvatar}
-                src={`https://picsum.photos/id/${avatarId}/100/100`}
+                src={`https://picsum.photos/id/${member.avatarId}/100/100`}
                 mode="aspectFill"
               />
               <View className={styles.memberInfo}>
-                <Text className={styles.memberName}>
-                  {['张明', '李华', '王芳'][idx]}
-                </Text>
-                <Text className={styles.memberDept}>
-                  {['技术研发部', '产品设计部', '市场运营部'][idx]}
-                </Text>
+                <Text className={styles.memberName}>{member.name}</Text>
+                <Text className={styles.memberDept}>{member.department}</Text>
               </View>
               {idx === 0 && <Text className={styles.memberRole}>车主</Text>}
             </View>

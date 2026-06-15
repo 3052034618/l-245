@@ -7,7 +7,7 @@ import { useAppStore } from '@/store/useStore';
 import type { RouteInfo } from '@/types';
 
 const RouteSettingPage: React.FC = () => {
-  const { routes, setDefaultRoute, removeRoute, addRoute } = useAppStore();
+  const { routes, setDefaultRoute, removeRoute, addRoute, updateRoute } = useAppStore();
   const [showModal, setShowModal] = useState(false);
   const [editRoute, setEditRoute] = useState<RouteInfo | null>(null);
   const [name, setName] = useState('');
@@ -31,9 +31,15 @@ const RouteSettingPage: React.FC = () => {
   };
   
   const handleDelete = (id: string) => {
+    const route = routes.find(r => r.id === id);
+    const isDefault = route?.isDefault;
+    const confirmText = isDefault
+      ? '确定要删除这条默认路线吗？删除后将自动将第一条路线设为默认。'
+      : '确定要删除这条路线吗？';
+    
     Taro.showModal({
       title: '删除路线',
-      content: '确定要删除这条路线吗？',
+      content: confirmText,
       confirmText: '删除',
       cancelText: '取消',
       confirmColor: '#F53F3F',
@@ -63,6 +69,12 @@ const RouteSettingPage: React.FC = () => {
     }
     
     if (editRoute) {
+      updateRoute(editRoute.id, {
+        name,
+        startLocation,
+        endLocation,
+        distance: parseFloat(distance) || 0
+      });
       Taro.showToast({ title: '修改成功', icon: 'success' });
       console.log('[RouteSetting] 修改路线', editRoute.id);
     } else {
@@ -72,7 +84,7 @@ const RouteSettingPage: React.FC = () => {
         startLocation,
         endLocation,
         distance: parseFloat(distance) || 0,
-        isDefault: false
+        isDefault: routes.length === 0
       };
       addRoute(newRoute);
       Taro.showToast({ title: '添加成功', icon: 'success' });
